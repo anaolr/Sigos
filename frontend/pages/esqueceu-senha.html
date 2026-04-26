@@ -1,0 +1,46 @@
+<!-- esqueceu-senha.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esqueceu a senha - SIGOS</title>
+    <link rel="stylesheet" href="../css/esqueceu-senha.css">
+</head>
+<body>
+    <main id="login-container">
+        <div id="imagem">
+            <img src="../imagens/Logo_clara.png" alt="Logo do sistema SIGOS">
+        </div>
+
+        <div id="content-login">
+            <form id="form-recuperacao">
+                <div class="item-form">
+                    <label for="email">E-mail</label>
+                    <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        placeholder="Digite seu e-mail"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <p class="descricao">
+                    Informe o e-mail cadastrado. Se existir uma conta vinculada,
+                    enviaremos um link para redefinir sua senha.
+                </p>
+
+                <p id="mensagem-recuperacao" aria-live="polite"></p>
+
+                <button type="submit">Enviar link</button>
+
+                <a href="login.html">Voltar para o login</a>
+            </form>
+        </div>
+    </main>
+
+    <script src="../js/esqueceu-senha.js"></script>
+</body>
+</html>

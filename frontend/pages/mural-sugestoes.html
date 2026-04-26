@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mural de Sugestões - SIGOS</title>
+    <link rel="stylesheet" href="../css/dashboard-funcionario.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+    <header>
+        <div id="imagem">
+            <img src="../imagens/Logo_cortada.png" alt="Logo do sistema" />
+        </div>
+        <h2>Mural de Sugestões</h2>
+    </header>
+
+    <div id="dashboard">
+        <aside id="painel">
+            <div id="usuario">
+                <div id="img-usuario">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <span>Funcionário</span>
+                <span id="nome-sidebar">Nome do usuário</span>
+            </div>
+
+            <nav id="ferramentas">
+                <div class="link-menu">
+                    <i class="fa-solid fa-house"></i>
+                    <a href="./dashboard-funcionario.html">Início</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <a href="./nova-ocorrencia.html">Nova ocorrência</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <a href="./nova-sugestao.html">Nova sugestão</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <a href="./minhas-solicitacoes.html">Minhas solicitações</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-comments"></i>
+                    <a href="./mural-sugestoes.html">Mural de Sugestões</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-user"></i>
+                    <a href="./perfil-funcionario.html">Perfil</a>
+                </div>
+            </nav>
+
+            <button
+                id="btn-logout"
+                type="button"
+                onclick="window.location.href='../pages/login.html'"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </button>
+        </aside>
+
+
+        <main id="content-dashboard">
+            <section id="sugestoes-destaque" class="card">
+                <div class="titulo-secao">
+                    <h2>Todas as Sugestões</h2>
+                </div>
+                <p style="margin-bottom: 20px; color: #444;">Apoie as ideias que você quer ver implementadas na empresa.</p>
+
+                <div class="sugestoes-grid" id="container-mural-completo">
+                    </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/mural-sugestoes.js"></script>
+    <script src="../js/menu-mobile.js"></script>
+    <script src="../js/dark-mode.js"></script>
+</body>
+
+</html>

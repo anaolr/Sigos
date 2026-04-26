@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGOS - Carregando</title>
+    <link rel="stylesheet" href="./css/login.css">
+    <meta http-equiv="refresh" content="2; url=./pages/login.html">
+    <style>
+        /* Estilos específicos para a tela de abertura */
+        #login-container {
+            height: 100vh;
+            justify-content: center; /* Centraliza verticalmente */
+            margin: 0;
+        }
+
+        #imagem {
+            margin: 0; /* Remove os margens negativas do login original */
+            height: auto;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        /* Uma animação suave de pulsação no logo */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        .loader-text {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #1E4F8A;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <main id="login-container">
+        <div id="imagem">
+            <img src="./imagens/Logo_clara.png" alt="Logo SIGOS">
+        </div>
+        <p class="loader-text">Iniciando sistema...</p>
+    </main>
+</body>
+</html>

@@ -1,0 +1,379 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #000;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 20px;
+    background-color: #1E4F8A;
+}
+
+#imagem {
+    width: 80px;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+#imagem img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+#dashboard {
+    display: flex;
+    flex: 1;
+}
+
+#painel {
+    width: 260px;
+    min-height: 100vh;
+    background-color: #1E4F8A;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px 20px;
+}
+
+#usuario {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#img-usuario {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: white;
+    color: #1E4F8A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+#usuario span:first-of-type {
+    font-weight: bold;
+}
+
+#nome-sidebar {
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+#ferramentas {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.link-menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.link-menu i {
+    width: 18px;
+    text-align: center;
+}
+
+.link-menu a {
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.link-menu a:hover {
+    color: #061f3d;
+}
+
+#btn-logout,
+#btn-marcar-lidas {
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: none;
+    background-color: #061f3d;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 1rem;
+}
+
+#btn-logout:hover,
+#btn-marcar-lidas:hover {
+    background-color: #0b2f59;
+}
+
+#content-notificacoes {
+    flex: 1;
+    background-color: #f4f6f8;
+    color: #000;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    overflow-y: auto;
+}
+
+#topo-notificacoes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+#topo-notificacoes h1 {
+    color: #1E4F8A;
+    font-size: 1.8rem;
+}
+
+#resumo-nao-lidas {
+    color: #555;
+    margin-top: 6px;
+}
+
+#lista-notificacoes {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card-notificacao {
+    display: flex;
+    gap: 20px;
+    background-color: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-left: 6px solid transparent;
+}
+
+.card-notificacao.lida {
+    opacity: 0.7;
+}
+
+.card-notificacao.nao-lida {
+    background-color: #eef5ff;
+}
+
+.card-notificacao.ocorrencia {
+    border-left-color: #d62828;
+}
+
+.card-notificacao.sugestao {
+    border-left-color: #1E4F8A;
+}
+
+.card-notificacao.usuario {
+    border-left-color: #2a9d8f;
+}
+
+.card-notificacao.sistema {
+    border-left-color: #6c757d;
+}
+
+.icone-notificacao {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #f1f3f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: #1E4F8A;
+    flex-shrink: 0;
+}
+
+.conteudo-notificacao {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.linha-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.tipo {
+    font-weight: bold;
+    color: #1E4F8A;
+}
+
+.data {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.conteudo-notificacao p {
+    line-height: 1.5;
+    color: #222;
+}
+
+.btn-detalhes {
+    color: #1E4F8A;
+    font-weight: bold;
+    width: fit-content;
+    text-decoration: none;
+}
+
+.btn-detalhes:hover {
+    color: #061f3d;
+}
+
+@media (max-width: 1024px) {
+    #painel {
+        width: 220px;
+        padding: 25px 16px;
+    }
+
+    #content-notificacoes {
+        padding: 24px;
+    }
+
+    .card-notificacao {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 768px) {
+    #dashboard {
+        flex-direction: column;
+    }
+
+    #painel {
+        width: 100%;
+        min-height: auto;
+        padding: 20px;
+        gap: 24px;
+    }
+
+    #usuario {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 16px;
+    }
+
+    #img-usuario {
+        width: 70px;
+        height: 70px;
+        font-size: 1.5rem;
+    }
+
+    #ferramentas {
+        margin-top: 0;
+    }
+
+    #content-notificacoes {
+        padding: 20px 16px;
+    }
+
+    #topo-notificacoes {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #btn-marcar-lidas {
+        width: 100%;
+    }
+
+    .card-notificacao {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .icone-notificacao {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+
+    .linha-topo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    header {
+        padding: 12px 16px;
+        gap: 12px;
+    }
+
+    header h2 {
+        font-size: 1.2rem;
+    }
+
+    #imagem {
+        width: 60px;
+        height: 45px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 0.95rem;
+    }
+
+    #usuario {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .link-menu {
+        font-size: 0.95rem;
+    }
+
+    #content-notificacoes {
+        padding: 16px;
+        gap: 18px;
+    }
+
+    #topo-notificacoes h1 {
+        font-size: 1.4rem;
+    }
+
+    .card-notificacao {
+        padding: 16px;
+    }
+
+    .conteudo-notificacao p {
+        font-size: 0.95rem;
+    }
+
+    .data {
+        font-size: 0.85rem;
+    }
+
+    #btn-logout,
+    #btn-marcar-lidas {
+        width: 100%;
+    }
+}

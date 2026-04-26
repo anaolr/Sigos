@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard do Administrador</title>
+  <link rel="stylesheet" href="../css/dashboard-admin.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+  <header>
+    <div id="imagem">
+      <img src="../imagens/Logo_cortada.png" alt="Logo do sistema" />
+    </div>
+    <h2>Dashboard do Administrador</h2>
+  </header>
+
+  <div id="dashboard">
+    <aside id="painel">
+      <div id="usuario">
+        <div id="img-usuario">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <span>Administrador</span>
+        <span id="nome-sidebar">Maria Eduarda</span>
+      </div>
+
+      <nav id="ferramentas">
+        <div class="link-menu">
+          <i class="fa-solid fa-user"></i>
+          <a href="./perfil-admin.html">Perfil</a>
+        </div>
+
+        <div class="link-menu">
+          <i class="fa-solid fa-user-plus"></i>
+          <a href="./cadastro-usuario.html">Cadastro</a>
+        </div>
+
+        <div class="link-menu">
+          <i class="fa-solid fa-chart-line"></i>
+          <a href="./dashboard-admin.html">Dashboard</a>
+        </div>
+
+        <div class="link-menu">
+          <i class="fa-solid fa-bell"></i>
+          <a href="./notificacoes-admin.html">Notificações</a>
+        </div>
+      </nav>
+
+      <button
+        id="btn-logout"
+        type="button"
+        onclick="window.location.href='../pages/login.html'"
+      >
+        <i class="fa-solid fa-right-from-bracket"></i>
+        Logout
+      </button>
+    </aside>
+
+    <main id="content-dashboard">
+      <section class="boas-vindas card">
+        <h1>Olá, Maria Eduarda 👋</h1>
+        <p>Bem-vinda ao painel geral do SIGOS.</p>
+      </section>
+
+      <section id="cards-resumo">
+        <div class="card-resumo red">
+          <h3>Alta prioridade</h3>
+          <p id="alta">12</p>
+        </div>
+
+        <div class="card-resumo yellow">
+          <h3>Média prioridade</h3>
+          <p id="media">8</p>
+        </div>
+
+        <div class="card-resumo green">
+          <h3>Baixa prioridade</h3>
+          <p id="baixa">1</p>
+        </div>
+      </section>
+
+      <section class="grid-principal">
+        <div class="card-painel">
+          <h3>Sugestões em destaque</h3>
+
+          <div id="lista-sugestoes-destaque-admin">
+            <!-- preenchido pelo JS -->
+          </div>
+
+          <div class="votacao">
+            <span>Resumo da votação</span>
+            <div class="botoes-votacao" id="resumo-votacao-admin">
+              <!-- preenchido pelo JS -->
+            </div>
+          </div>
+
+          <h3>Indicadores gerais</h3>
+
+          <div class="inputs">
+            <div class="campo-indicador">
+              <label>Tempo médio de resolução</label>
+              <div class="box" id="tempo">2 dias</div>
+            </div>
+
+            <div class="campo-indicador">
+              <label>Setor mais crítico</label>
+              <div class="box" id="setor">Produção</div>
+            </div>
+
+            <div class="campo-indicador">
+              <label>Sugestões em análise</label>
+              <div class="box" id="sugestoes_analise">5</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-painel">
+          <h3>Ocorrências por prioridade</h3>
+
+          <div class="grafico-box">
+            <canvas id="graficoPizza"></canvas>
+          </div>
+
+          <div class="alerta">
+            <h3>⚠️ Alerta</h3>
+            <p>Setor: <span id="alertaSetor">Produção</span></p>
+            <p>Local: <span id="alertaLocal">Fábrica 1</span></p>
+            <p>Prioridade: <span id="alertaPrioridade">Alta</span></p>
+          </div>
+
+          <div class="info-grid">
+            <div class="info" id="criticas">2 Críticas</div>
+            <div class="info" id="andamento">23 Em andamento</div>
+            <div class="info" id="abertas">150 Abertas</div>
+            <div class="info" id="resolvidas">75 Resolvidas</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../js/dashboard-admin.js"></script>
+  <script src="../js/menu-mobile.js"></script>
+  <script src="../js/dark-mode.js"></script> 
+</body>
+</html>

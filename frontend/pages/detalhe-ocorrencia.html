@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalhes da Ocorrência</title>
+    <link rel="stylesheet" href="../css/detalhe-ocorrencia.css" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+</head>
+<body>
+    <header>
+        <div id="imagem">
+            <img src="../imagens/Logo_cortada.png" alt="Logo do sistema" />
+        </div>
+        <h2>Detalhes da Ocorrência</h2>
+    </header>
+
+    <div id="dashboard">
+        <aside id="painel">
+            <div id="usuario">
+                <div id="img-usuario">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <span id="perfil-sidebar">Perfil</span>
+                <span id="nome-sidebar">Nome do usuário</span>
+            </div>
+
+            <nav id="ferramentas"></nav>
+
+            <button
+                id="btn-logout"
+                type="button"
+                onclick="window.location.href='../pages/login.html'"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </button>
+        </aside>
+
+        <main id="content-detalhes">
+            <form id="form-ocorrencia">
+                <div class="info">
+                    <h3>Título</h3>
+                    <input type="text" id="titulo" readonly />
+                </div>
+
+                <div class="info">
+                    <h3>Descrição</h3>
+                    <textarea id="descricao" rows="5" readonly></textarea>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info">
+                        <h3>Categoria</h3>
+                        <input type="text" id="categoria" readonly />
+                    </div>
+
+                    <div class="info">
+                        <h3>Setor de origem</h3>
+                        <input type="text" id="setor_origem" readonly />
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info">
+                        <h3>Setor responsável</h3>
+                        <input type="text" id="setor_responsavel" readonly />
+                    </div>
+
+                    <div class="info">
+                        <h3>Local</h3>
+                        <input type="text" id="local" readonly />
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info">
+                        <h3>Urgência</h3>
+                        <input type="text" id="urgencia" readonly />
+                    </div>
+
+                    <div class="info">
+                        <h3>Autor</h3>
+                        <input type="text" id="autor" readonly />
+                    </div>
+                </div>
+
+                <div class="info">
+                    <h3>Data de envio</h3>
+                    <input type="text" id="data_envio" readonly />
+                </div>
+
+                <div class="info">
+                    <h3>Anexo</h3>
+                    <img id="preview-anexo" src="" alt="Anexo da ocorrência" />
+                </div>
+
+                <div class="info-grid" id="bloco-gestao">
+                    <div class="info">
+                        <h3>Status</h3>
+                        <select id="status">
+                            <option value="aberta">Aberta</option>
+                            <option value="em_analise">Em análise</option>
+                            <option value="em_andamento">Em andamento</option>
+                            <option value="concluida">Concluída</option>
+                        </select>
+                    </div>
+
+                    <div class="info">
+                        <h3>Prioridade</h3>
+                        <select id="prioridade">
+                            <option value="">Selecione</option>
+                            <option value="baixa">Baixa</option>
+                            <option value="media">Média</option>
+                            <option value="alta">Alta</option>
+                            <option value="critica">Crítica</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="info" id="bloco-responsavel">
+                    <h3>Responsável pelo atendimento</h3>
+
+                    <div class="responsavel-box">
+                        <div class="campo-responsavel">
+                            <label for="responsavel_ocorrencia">Selecionar responsável</label>
+                            <select id="responsavel_ocorrencia">
+                                <option value="">Selecione...</option>
+                                <option value="1">Maria Eduarda - Analista de TI</option>
+                                <option value="2">João da Silva - Suporte</option>
+                                <option value="3">Pedro Henrique - Técnico</option>
+                                <option value="4">Ana Lopes - Supervisora</option>
+                            </select>
+                        </div>
+
+                        <div class="campo-responsavel">
+                            <label for="responsavel_atual">Responsável atual</label>
+                            <input
+                                type="text"
+                                id="responsavel_atual"
+                                value="Nenhum responsável definido"
+                                readonly
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info" id="bloco-observacao">
+                    <h3>Observação do gestor</h3>
+                    <textarea
+                        id="observacao_gestor"
+                        rows="4"
+                        placeholder="Digite uma observação"
+                    ></textarea>
+                </div>
+
+                <p id="mensagem-ocorrencia" aria-live="polite"></p>
+
+                <div id="acoes-ocorrencia">
+                    <button id="btn-salvar" type="submit">
+                        Salvar alterações
+                    </button>
+
+                    <button id="btn-reabrir" type="button" style="display: none;">
+                        Reabrir ocorrência
+                    </button>
+
+                    <button id="btn-pdf" type="button">
+                        Gerar PDF
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <div id="modal-reabrir" class="modal">
+        <div class="modal-content">
+            <h3>Reabrir ocorrência</h3>
+            <p>Tem certeza que deseja reabrir esta ocorrência?</p>
+
+            <label for="motivo_reabertura">Motivo da reabertura</label>
+            <textarea
+                id="motivo_reabertura"
+                rows="4"
+                placeholder="Explique por que a ocorrência está sendo reaberta"
+            ></textarea>
+
+            <div class="botoes-modal">
+                <button type="button" id="btn-cancelar-reabrir">
+                    Cancelar
+                </button>
+
+                <button type="button" id="btn-confirmar-reabrir" class="danger">
+                    Reabrir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/detalhe-ocorrencia.js"></script>
+    <script src="../js/menu-mobile.js"></script>
+    <script src="../js/dark-mode.js"></script> 
+</body>
+</html>

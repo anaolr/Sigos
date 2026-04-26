@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel de Solicitações</title>
+    <link rel="stylesheet" href="../css/painel-solicitacoes-gestor.css" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+</head>
+<body>
+    <header>
+        <div id="imagem">
+            <img src="../imagens/Logo_cortada.png" alt="Logo do sistema" />
+        </div>
+        <h2>Painel de Solicitações</h2>
+    </header>
+
+    <div id="dashboard">
+        <aside id="painel">
+            <div id="usuario">
+                <div id="img-usuario">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <span>Gestor</span>
+                <span id="nome-sidebar">Nome do usuário</span>
+            </div>
+
+            <nav id="ferramentas">
+                <div class="link-menu">
+                    <i class="fa-solid fa-user"></i>
+                    <a href="./perfil-gestor.html">Perfil</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-table-columns"></i>
+                    <a href="./painel-solicitacoes-gestor.html">Solicitações</a>
+                </div>
+
+                 <div class="link-menu">
+            <i class="fa-solid fa-chart-line"></i>
+            <a href="./dashboard-gestor.html">Dashboard</a>
+          </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-bell"></i>
+                    <a href="./notificacoes.html">Notificações</a>
+                </div>
+            </nav>
+
+            <button
+                id="btn-logout"
+                type="button"
+                onclick="window.location.href='../pages/login.html'"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </button>
+        </aside>
+
+        <main id="content-painel">
+            <section class="topo">
+                <div>
+                    <h1>Ocorrências e sugestões</h1>
+                    <p>Visualize, pesquise e acompanhe as solicitações do setor.</p>
+                </div>
+            </section>
+
+            <section class="barra-controles">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input
+                        type="text"
+                        id="input-busca"
+                        placeholder="Pesquisar por título, descrição, setor, autor ou matrícula"
+                    />
+                </div>
+
+                <div class="filtros">
+                    <button class="filtro ativo" data-filtro="todas">Todas</button>
+                    <button class="filtro" data-filtro="ocorrencia">Ocorrências</button>
+                    <button class="filtro" data-filtro="sugestao">Sugestões</button>
+                </div>
+            </section>
+
+            <section id="cards-resumo">
+                <div class="card-resumo">
+                    <h3>Total</h3>
+                    <p id="total-itens">0</p>
+                </div>
+
+                <div class="card-resumo">
+                    <h3>Ocorrências</h3>
+                    <p id="total-ocorrencias">0</p>
+                </div>
+
+                <div class="card-resumo">
+                    <h3>Sugestões</h3>
+                    <p id="total-sugestoes">0</p>
+                </div>
+
+                <div class="card-resumo">
+                    <h3>Em análise</h3>
+                    <p id="total-em-analise">0</p>
+                </div>
+            </section>
+
+            <section id="lista-solicitacoes">
+                <!-- preenchido pelo JS -->
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/painel-solicitacoes-gestor.js"></script>
+    <script src="../js/menu-mobile.js"></script>
+    <script src="../js/dark-mode.js"></script> 
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Sugestão</title>
+    <link rel="stylesheet" href="../css/nova-sugestao.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div id="imagem">
+            <img src="../imagens/Logo_cortada.png" alt="Logo do sistema">
+        </div>
+        <h2>Nova Sugestão</h2>
+    </header>
+
+    <div id="dashboard">
+        <aside id="painel">
+            <div id="usuario">
+                <div id="img-usuario">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <span>Funcionário</span>
+                <span id="nome-sidebar">Nome do usuário</span>
+            </div>
+
+            <nav id="ferramentas">
+                <div class="link-menu">
+                    <i class="fa-solid fa-house"></i>
+                    <a href="./dashboard-funcionario.html">Início</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <a href="./nova-ocorrencia.html">Nova ocorrência</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <a href="./nova-sugestao.html">Nova sugestão</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <a href="./minhas-solicitacoes.html">Minhas solicitações</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-comments"></i>
+                    <a href="./mural-sugestoes.html">Mural de Sugestões</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-user"></i>
+                    <a href="./perfil-funcionario.html">Perfil</a>
+                </div>
+            </nav>
+
+            <button
+                id="btn-logout"
+                type="button"
+                onclick="window.location.href='../pages/login.html'"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </button>
+        </aside>
+
+        <main id="content-sugestao">
+            <section class="topo">
+                <div>
+                    <h1>Enviar sugestão</h1>
+                    <p>Compartilhe uma ideia de melhoria para a empresa.</p>
+                </div>
+            </section>
+
+            <form id="form-sugestao">
+                <section class="card-formulario">
+                    <h3>Informações da sugestão</h3>
+
+                    <div class="grid-duplo">
+                        <div class="campo">
+                            <label for="titulo">Título</label>
+                            <input
+                                type="text"
+                                id="titulo"
+                                placeholder="Ex: Melhorar iluminação do corredor"
+                                required
+                            >
+                        </div>
+
+                        <div class="campo">
+                            <label for="setor-destino">Setor responsável</label>
+                            <select id="setor-destino" required>
+                                <option value="">Selecione</option>
+                                <option value="administrativo">Administrativo</option>
+                                <option value="rh">RH</option>
+                                <option value="ti">TI</option>
+                                <option value="manutencao">Manutenção</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-duplo">
+                        <div class="campo">
+                            <label for="beneficio">Benefício esperado</label>
+                            <input
+                                type="text"
+                                id="beneficio"
+                                placeholder="Ex: Melhorar a comunicação interna"
+                                required
+                            >
+                        </div>
+
+                        <div class="campo">
+                            <label for="data-envio">Data de envio</label>
+                            <input type="text" id="data-envio" readonly>
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label for="descricao">Descrição da sugestão</label>
+                        <textarea
+                            id="descricao"
+                            rows="6"
+                            placeholder="Explique sua sugestão com detalhes"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="campo">
+                        <label for="anexo">Anexo (opcional)</label>
+                        <input type="file" id="anexo" accept="image/*">
+                    </div>
+
+                    <div id="preview-container">
+                        <img id="preview-anexo" src="" alt="Prévia do anexo">
+                    </div>
+                </section>
+
+                <p id="mensagem-formulario"></p>
+
+                <section id="acoes-formulario">
+                    <button type="button" class="btn-secundario" id="btn-cancelar">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-principal">
+                        Enviar sugestão
+                    </button>
+                </section>
+            </form>
+        </main>
+    </div>
+
+    <script src="../js/nova-sugestao.js"></script>
+    <script src="../js/menu-mobile.js"></script>
+    <script src="../js/dark-mode.js"></script> 
+</body>
+</html>

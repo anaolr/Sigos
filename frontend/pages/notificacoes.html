@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notificações</title>
+    <link rel="stylesheet" href="../css/notificacoes.css" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+</head>
+<body>
+    <header>
+        <div id="imagem">
+            <img src="../imagens/Logo_cortada.png" alt="Logo do sistema" />
+        </div>
+        <h2>Notificações</h2>
+    </header>
+
+    <div id="dashboard">
+        <aside id="painel">
+            <div id="usuario">
+                <div id="img-usuario">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <span>Gestor</span>
+                <span id="nome-sidebar">Nome do usuário</span>
+            </div>
+
+            <nav id="ferramentas">
+                <div class="link-menu">
+                    <i class="fa-solid fa-user"></i>
+                    <a href="./perfil-gestor.html">Perfil</a>
+                </div>
+
+                 <div class="link-menu">
+                    <i class="fa-solid fa-table-columns"></i>
+                    <a href="./painel-solicitacoes-gestor.html">Solicitações</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <a href="./dashboard-gestor.html">Dashboard</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-bell"></i>
+                    <a href="./notificacoes.html">Notificações</a>
+                </div>
+            </nav>
+
+            <button
+                id="btn-logout"
+                type="button"
+                onclick="window.location.href='../pages/login.html'"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </button>
+        </aside>
+
+        <main id="content-notificacoes">
+            <div id="topo-notificacoes">
+                <div>
+                    <h1>Feed de notificações</h1>
+                    <p id="resumo-nao-lidas">Você tem 2 notificações não lidas</p>
+                </div>
+
+                <button id="btn-marcar-lidas" type="button">
+                    Marcar todas como lidas
+                </button>
+            </div>
+
+            <section id="lista-notificacoes">
+                <article class="card-notificacao nao-lida ocorrencia">
+                    <div class="icone-notificacao">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+
+                    <div class="conteudo-notificacao">
+                        <div class="linha-topo">
+                            <span class="tipo">Nova ocorrência</span>
+                            <span class="data">09/04/2026 - 14:20</span>
+                        </div>
+
+                        <p>
+                            <strong>Ana Souza</strong> cadastrou a ocorrência
+                            <strong>"Fio exposto no corredor"</strong> no setor
+                            <strong>Almoxarifado</strong>.
+                        </p>
+
+                        <a href="./detalhe-ocorrencia.html" class="btn-detalhes">
+                            Ver detalhes
+                        </a>
+                    </div>
+                </article>
+
+                <article class="card-notificacao nao-lida sugestao">
+                    <div class="icone-notificacao">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+
+                    <div class="conteudo-notificacao">
+                        <div class="linha-topo">
+                            <span class="tipo">Nova sugestão</span>
+                            <span class="data">09/04/2026 - 15:05</span>
+                        </div>
+
+                        <p>
+                            <strong>Carlos Lima</strong> enviou a sugestão
+                            <strong>"Melhorar iluminação"</strong> para o setor
+                            <strong>Administrativo</strong>.
+                        </p>
+
+                        <a href="./detalhe-sugestao.html" class="btn-detalhes">
+                            Ver detalhes
+                        </a>
+                    </div>
+                </article>
+
+                <article class="card-notificacao lida ocorrencia">
+                    <div class="icone-notificacao">
+                        <i class="fa-solid fa-gear"></i>
+                    </div>
+
+                    <div class="conteudo-notificacao">
+                        <div class="linha-topo">
+                            <span class="tipo">Ocorrência em andamento</span>
+                            <span class="data">09/04/2026 - 16:10</span>
+                        </div>
+
+                        <p>
+                            A ocorrência <strong>"Computador não liga"</strong>
+                            foi atualizada para <strong>Em andamento</strong>.
+                        </p>
+
+                        <a href="./detalhe-ocorrencia.html" class="btn-detalhes">
+                            Ver detalhes
+                        </a>
+                    </div>
+                </article>
+
+                <article class="card-notificacao lida sugestao">
+                    <div class="icone-notificacao">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                    <div class="conteudo-notificacao">
+                        <div class="linha-topo">
+                            <span class="tipo">Sugestão aprovada</span>
+                            <span class="data">09/04/2026 - 17:00</span>
+                        </div>
+
+                        <p>
+                            A sugestão <strong>"Criar quadro de avisos"</strong>
+                            foi <strong>aprovada</strong> pelo gestor.
+                        </p>
+
+                        <a href="./detalhe-sugestao.html" class="btn-detalhes">
+                            Ver detalhes
+                        </a>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/notificacoes.js"></script>
+    <script src="../js/menu-mobile.js"></script>
+    <script src="../js/dark-mode.js"></script> 
+</body>
+</html>

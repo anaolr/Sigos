@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard do Gestor</title>
+    <link rel="stylesheet" href="../css/dashboard-gestor.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div id="imagem">
+        <img src="../imagens/Logo_cortada.png" alt="Logo do sistema" />
+      </div>
+      <h2>Dashboard do Gestor</h2>
+    </header>
+
+    <div id="dashboard">
+      <aside id="painel">
+        <div id="usuario">
+          <div id="img-usuario">
+            <i class="fa-solid fa-user-tie"></i>
+          </div>
+          <span>Gestor</span>
+          <span id="nome-sidebar">Maria Eduarda</span>
+        </div>
+
+        <nav id="ferramentas">
+          <div class="link-menu">
+            <i class="fa-solid fa-user"></i>
+            <a href="./perfil-gestor.html">Perfil</a>
+          </div>
+
+          <div class="link-menu">
+            <i class="fa-solid fa-folder-open"></i>
+            <a href="./painel-solicitacoes-gestor.html">Solicitações</a>
+          </div>
+
+          <div class="link-menu">
+            <i class="fa-solid fa-table-columns"></i>
+            <a href="./dashboard-gestor.html">Dashboard</a>
+          </div>
+
+          <div class="link-menu">
+            <i class="fa-solid fa-bell"></i>
+            <a href="./notificacoes.html">Notificações</a>
+          </div>
+        </nav>
+
+        <button
+          id="btn-logout"
+          type="button"
+          onclick="window.location.href = '../pages/login.html'"
+        >
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Logout
+        </button>
+      </aside>
+
+      <main id="content-dashboard">
+        <section class="boas-vindas">
+          <h1>Olá, Maria Eduarda 👋</h1>
+          <p>Bem-vinda ao painel do setor de TI.</p>
+        </section>
+
+        <section id="cards-resumo">
+          <button class="card-resumo prioridade-alta" data-filtro="alta">
+            <span class="numero">12</span>
+            <span class="texto">Alta prioridade</span>
+          </button>
+
+          <button class="card-resumo prioridade-media" data-filtro="media">
+            <span class="numero">4</span>
+            <span class="texto">Média prioridade</span>
+          </button>
+
+          <button class="card-resumo prioridade-baixa" data-filtro="baixa">
+            <span class="numero">2</span>
+            <span class="texto">Baixa prioridade</span>
+          </button>
+
+          <div class="card-resumo neutro">
+            <span class="numero">18</span>
+            <span class="texto">Ocorrências abertas</span>
+          </div>
+        </section>
+
+        <section class="grid-principal">
+          <div class="card-painel">
+            <h3>Resumo do setor</h3>
+
+            <div class="item-resumo">
+              <div>
+                <strong>Ocorrências em aberto</strong>
+                <p>18 ocorrências aguardando ação</p>
+              </div>
+
+              <a href="./painel-solicitacoes-gestor.html" class="btn-acao">
+                Ver detalhes
+              </a>
+            </div>
+
+            <div class="item-resumo">
+              <div>
+                <strong>Sugestões recebidas</strong>
+                <p>7 sugestões enviadas para o setor</p>
+              </div>
+
+              <a href="./painel-solicitacoes-gestor.html" class="btn-acao">
+                Ver detalhes
+              </a>
+            </div>
+
+            <div class="faixa roxa">
+              <div>
+                <strong>Ocorrências críticas</strong>
+                <p>3 casos precisam de atenção imediata</p>
+              </div>
+
+              <div class="acoes-faixa">
+                <button
+                  onclick="
+                    window.location.href =
+                      './painel-solicitacoes-gestor.html?prioridade=alta'
+                  "
+                >
+                  Ver ocorrências
+                </button>
+              </div>
+            </div>
+
+            <div class="faixa laranja">
+              <div>
+                <strong>Ocorrências em andamento</strong>
+                <p>6 ocorrências já estão sendo tratadas</p>
+              </div>
+
+              <div class="acoes-faixa">
+                <button
+                  onclick="
+                    window.location.href =
+                      './painel-solicitacoes-gestor.html?status=em_andamento'
+                  "
+                >
+                  Abrir painel
+                </button>
+              </div>
+            </div>
+
+            <div class="faixa verde">
+              <div>
+                <strong>Ocorrências resolvidas</strong>
+                <p>9 ocorrências concluídas este mês</p>
+              </div>
+
+              <div class="acoes-faixa">
+                <button
+                  onclick="
+                    window.location.href =
+                      './painel-solicitacoes-gestor.html?status=concluida'
+                  "
+                >
+                  Ver histórico
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-painel">
+            <h3>Últimas ocorrências</h3>
+
+            <div class="ocorrencia">
+              <div>
+                <strong>Computador sem funcionar</strong>
+                <p>Setor RH</p>
+              </div>
+
+              <div class="tags">
+                <span class="tag alta">Alta</span>
+                <span class="tag andamento">Em andamento</span>
+              </div>
+            </div>
+
+            <div class="ocorrencia">
+              <div>
+                <strong>Internet instável</strong>
+                <p>Setor Administrativo</p>
+              </div>
+
+              <div class="tags">
+                <span class="tag alta">Alta</span>
+                <span class="tag aberta">Aberta</span>
+              </div>
+            </div>
+
+            <div class="ocorrencia">
+              <div>
+                <strong>Impressora travando</strong>
+                <p>Setor Financeiro</p>
+              </div>
+
+              <div class="tags">
+                <span class="tag media">Média</span>
+                <span class="tag andamento">Em andamento</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card-painel">
+          <h3>Sugestões do setor</h3>
+
+          <div id="lista-sugestoes-setor">
+            <!-- preenchido pelo JS -->
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="../js/dashboard-gestor.js"></script>
+    <script src="../js/menu-mobile.js"></script>
+    <script src="../js/dark-mode.js"></script>
+  </body>
+</html>

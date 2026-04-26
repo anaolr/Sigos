@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nova Ocorrência</title>
+    <link rel="stylesheet" href="../css/nova-ocorrencia.css" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+</head>
+<body>
+    <header>
+        <div id="imagem">
+            <img src="../imagens/Logo_cortada.png" alt="Logo do sistema" />
+        </div>
+        <h2>Nova Ocorrência</h2>
+    </header>
+
+    <div id="dashboard">
+        <aside id="painel">
+            <div id="usuario">
+                <div id="img-usuario">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <span>Funcionário</span>
+                <span id="nome-sidebar">Nome do usuário</span>
+            </div>
+
+            <nav id="ferramentas">
+                <div class="link-menu">
+                    <i class="fa-solid fa-house"></i>
+                    <a href="./dashboard-funcionario.html">Início</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <a href="./nova-ocorrencia.html">Nova ocorrência</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <a href="./nova-sugestao.html">Nova sugestão</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <a href="./minhas-solicitacoes.html">Minhas solicitações</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-comments"></i>
+                    <a href="./mural-sugestoes.html">Mural de Sugestões</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-user"></i>
+                    <a href="./perfil-funcionario.html">Perfil</a>
+                </div>
+            </nav>
+
+            <button
+                id="btn-logout"
+                type="button"
+                onclick="window.location.href='../pages/login.html'"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </button>
+        </aside>
+
+        <main id="content-ocorrencia">
+            <section class="topo">
+                <div>
+                    <h1>Registrar ocorrência</h1>
+                    <p>Preencha as informações abaixo para enviar uma nova ocorrência.</p>
+                </div>
+            </section>
+
+            <form id="form-ocorrencia">
+                <section class="card-formulario">
+                    <h3>Informações da ocorrência</h3>
+
+                    <div class="grid-duplo">
+                        <div class="campo">
+                            <label for="titulo">Título</label>
+                            <input
+                                type="text"
+                                id="titulo"
+                                placeholder="Ex: Computador não liga"
+                                required
+                            />
+                        </div>
+
+                        <div class="campo">
+                            <label for="categoria">Categoria</label>
+                            <select id="categoria" required>
+                                <option value="">Selecione</option>
+                                <option value="infraestrutura">Infraestrutura</option>
+                                <option value="equipamento">Equipamento</option>
+                                <option value="limpeza">Limpeza</option>
+                                <option value="seguranca">Segurança</option>
+                                <option value="sistema">Sistema</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-duplo">
+                        <div class="campo">
+                            <label for="setor-origem">Setor de origem</label>
+                            <input
+                                type="text"
+                                id="setor-origem"
+                                readonly
+                            />
+                        </div>
+
+                        <div class="campo">
+                            <label for="setor-responsavel">Setor responsável</label>
+                            <select id="setor-responsavel" required>
+                                <option value="">Selecione</option>
+                                <option value="ti">TI</option>
+                                <option value="manutencao">Manutenção</option>
+                                <option value="limpeza">Limpeza</option>
+                                <option value="rh">RH</option>
+                                <option value="administrativo">Administrativo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-duplo">
+                        <div class="campo">
+                            <label for="local">Local</label>
+                            <input
+                                type="text"
+                                id="local"
+                                placeholder="Ex: Sala 03"
+                                required
+                            />
+                        </div>
+
+                        <div class="campo">
+                            <label for="urgencia">Urgência</label>
+                            <select id="urgencia" required>
+                                <option value="">Selecione</option>
+                                <option value="baixa">Baixa</option>
+                                <option value="media">Média</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-duplo">
+                        <div class="campo">
+                            <label for="data-envio">Data de envio</label>
+                            <input type="text" id="data-envio" readonly />
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label for="descricao">Descrição</label>
+                        <textarea
+                            id="descricao"
+                            rows="6"
+                            placeholder="Descreva detalhadamente a ocorrência"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="campo">
+                        <label for="anexo">Anexo (opcional)</label>
+                        <input type="file" id="anexo" accept="image/*" />
+                    </div>
+
+                    <div id="preview-container">
+                        <img id="preview-anexo" src="" alt="Prévia do anexo" />
+                    </div>
+                </section>
+
+                <p id="mensagem-formulario"></p>
+
+                <section id="acoes-formulario">
+                    <button type="button" class="btn-secundario" id="btn-cancelar">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-principal">
+                        Enviar ocorrência
+                    </button>
+                </section>
+            </form>
+        </main>
+    </div>
+
+    <script src="../js/nova-ocorrencia.js"></script>
+    <script src="../js/menu-mobile.js"></script>
+    <script src="../js/dark-mode.js"></script> 
+</body>
+</html>

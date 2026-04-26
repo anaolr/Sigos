@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard do Funcionário</title>
+    <link rel="stylesheet" href="../css/dashboard-funcionario.css" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+</head>
+<body>
+    <header>
+        <div id="imagem">
+            <img src="../imagens/Logo_cortada.png" alt="Logo do sistema" />
+        </div>
+        <h2>Dashboard do Funcionário</h2>
+    </header>
+
+    <div id="dashboard">
+        <aside id="painel">
+            <div id="usuario">
+                <div id="img-usuario">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <span>Funcionário</span>
+                <span id="nome-sidebar">Nome do usuário</span>
+            </div>
+
+            <nav id="ferramentas">
+                <div class="link-menu">
+                    <i class="fa-solid fa-house"></i>
+                    <a href="./dashboard-funcionario.html">Início</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <a href="./nova-ocorrencia.html">Nova ocorrência</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <a href="./nova-sugestao.html">Nova sugestão</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <a href="./minhas-solicitacoes.html">Minhas solicitações</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-comments"></i>
+                    <a href="./mural-sugestoes.html">Mural de Sugestões</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-user"></i>
+                    <a href="./perfil-funcionario.html">Perfil</a>
+                </div>
+            </nav>
+
+            <button
+                id="btn-logout"
+                type="button"
+                onclick="window.location.href='../pages/login.html'"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </button>
+        </aside>
+
+        <main id="content-dashboard">
+            <section id="boas-vindas" class="card">
+                <h1>Olá, <span id="nome-usuario">Usuário</span>!</h1>
+                <p>Bem-vindo ao SIGOS. Aqui você pode acompanhar suas ocorrências e sugestões.</p>
+            </section>
+
+            <section id="cards-resumo">
+                <div class="card card-resumo">
+                    <div class="icone-card">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </div>
+                    <div>
+                        <h3>Ocorrências abertas</h3>
+                        <p id="ocorrencias-abertas">0</p>
+                    </div>
+                </div>
+
+                <div class="card card-resumo">
+                    <div class="icone-card">
+                        <i class="fa-solid fa-spinner"></i>
+                    </div>
+                    <div>
+                        <h3>Em andamento</h3>
+                        <p id="ocorrencias-andamento">0</p>
+                    </div>
+                </div>
+
+                <div class="card card-resumo">
+                    <div class="icone-card">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h3>Sugestões enviadas</h3>
+                        <p id="sugestoes-enviadas">0</p>
+                    </div>
+                </div>
+
+                <div class="card card-resumo">
+                    <div class="icone-card">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <h3>Sugestões aprovadas</h3>
+                        <p id="sugestoes-aprovadas">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="acoes-rapidas" class="card">
+                <h2>Ações rápidas</h2>
+                <div class="acoes-grid">
+                    <a href="./nova-ocorrencia.html" class="acao-item">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span>Registrar ocorrência</span>
+                    </a>
+
+                    <a href="./nova-sugestao.html" class="acao-item">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        <span>Enviar sugestão</span>
+                    </a>
+
+                    <a href="./minhas-solicitacoes.html" class="acao-item">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <span>Minhas solicitações</span>
+                    </a>
+                </div>
+            </section>
+
+            <section id="sugestoes-destaque" class="card">
+    <div class="titulo-secao">
+        <h2>Sugestões em destaque</h2>
+
+    </div>
+
+    <div class="sugestoes-grid">
+        <article class="sugestao-card">
+            <div class="sugestao-topo">
+                <span class="tag-setor">Administrativo</span>
+                <span class="votos">
+                    <i class="fa-solid fa-thumbs-up"></i>
+                    23
+                </span>
+            </div>
+
+            <h3>Adicionar micro-ondas na copa</h3>
+
+            <p>
+                Muitos funcionários almoçam na empresa e atualmente existe apenas
+                um micro-ondas para todo o andar.
+            </p>
+
+            <div class="acoes-sugestao">
+                <button class="btn-votar">
+                    <i class="fa-solid fa-thumbs-up"></i>
+                    Apoiar sugestão
+                </button>
+            </div>
+        </article>
+
+        <article class="sugestao-card">
+            <div class="sugestao-topo">
+                <span class="tag-setor">TI</span>
+                <span class="votos">
+                    <i class="fa-solid fa-thumbs-up"></i>
+                    17
+                </span>
+            </div>
+
+            <h3>Melhorar a rede Wi‑Fi</h3>
+
+            <p>
+                A internet cai com frequência no segundo andar e isso atrapalha
+                o trabalho da equipe.
+            </p>
+
+            <div class="acoes-sugestao">
+                <button class="btn-votar votado">
+                    <i class="fa-solid fa-check"></i>
+                    Votado
+                </button>
+            </div>
+        </article>
+    </div>
+</section>
+
+            <section id="ultimas-atividades" class="card">
+                <h2>Últimas atividades</h2>
+                <div id="lista-atividades">
+                    <!-- preenchido pelo JS -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/dashboard-funcionario.js"></script>
+    <script src="../js/menu-mobile.js"></script>
+    <script src="../js/dark-mode.js"></script> 
+</body>
+</html>

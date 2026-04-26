@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil do Gestor</title>
+    <link rel="stylesheet" href="../css/perfil-gestor.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div id="imagem">
+        <img src="../imagens/Logo_cortada.png" alt="Logo do sistema" />
+      </div>
+      <h2>Perfil do Gestor</h2>
+    </header>
+
+    <div id="dashboard">
+      <aside id="painel">
+        
+        <div id="usuario">
+          <div id="img-usuario">
+            <i class="fa-solid fa-user-tie"></i>
+          </div>
+          <span>Gestor</span>
+          <span id="nome-sidebar">Nome do usuário</span>
+        </div>
+
+        <nav id="ferramentas">
+          <div class="link-menu">
+            <i class="fa-solid fa-user"></i>
+            <a href="./perfil-gestor.html">Perfil</a>
+          </div>
+
+           <div class="link-menu">
+                    <i class="fa-solid fa-table-columns"></i>
+                    <a href="./painel-solicitacoes-gestor.html">Solicitações</a>
+                </div>
+
+          <div class="link-menu">
+            <i class="fa-solid fa-chart-line"></i>
+            <a href="./dashboard-gestor.html">Dashboard</a>
+          </div>
+
+          <div class="link-menu">
+            <i class="fa-solid fa-bell"></i>
+            <a href="./notificacoes.html">Notificações</a>
+          </div>
+        </nav>
+
+        <button
+          id="btn-logout"
+          type="button"
+          onclick="window.location.href = '../pages/login.html'"
+        >
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Logout
+        </button>
+      </aside>
+
+      <main id="content-perfil">
+        <form id="form-perfil-gestor">
+          <section class="card-perfil">
+            <div id="foto-perfil">
+              <img id="preview-foto" src="" alt="Foto do gestor" />
+              <i class="fa-solid fa-user-tie" id="icone-foto"></i>
+            </div>
+
+            <div id="acoes-foto">
+              <input type="file" id="input-foto" accept="image/*" hidden />
+              <button type="button" class="btn-secundario" id="btn-alterar-foto">
+                Alterar foto
+              </button>
+            </div>
+          </section>
+
+          <section class="card-info">
+            <h3>Informações pessoais</h3>
+
+            <div class="info-grid">
+              <div class="campo">
+                <label for="nome">Nome completo</label>
+                <input type="text" id="nome" />
+              </div>
+
+              <div class="campo">
+                <label for="matricula">Matrícula</label>
+                <input type="text" id="matricula" readonly />
+              </div>
+            </div>
+
+            <div class="info-grid">
+              <div class="campo">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" />
+              </div>
+
+              <div class="campo">
+                <label for="tipo_usuario">Tipo de usuário</label>
+                <input type="text" id="tipo_usuario" readonly />
+              </div>
+            </div>
+
+            <div class="info-grid">
+              <div class="campo">
+                <label for="cargo">Cargo</label>
+                <input type="text" id="cargo" readonly />
+              </div>
+
+              <div class="campo">
+                <label for="setor">Setor</label>
+                <input type="text" id="setor" readonly />
+              </div>
+            </div>
+          </section>
+
+          <section class="card-info">
+            <h3>Informações de acesso</h3>
+
+            <div class="info-grid">
+              <div class="campo">
+                <label for="senha">Nova senha</label>
+                <input
+                  type="password"
+                  id="senha"
+                  placeholder="Digite uma nova senha"
+                />
+              </div>
+
+              <div class="campo">
+                <label for="confirmar-senha">Confirmar nova senha</label>
+                <input
+                  type="password"
+                  id="confirmar-senha"
+                  placeholder="Confirme a nova senha"
+                />
+              </div>
+            </div>
+          </section>
+
+          <p id="mensagem-perfil" aria-live="polite"></p>
+
+          <section id="acoes-perfil">
+            <button type="button" class="btn-secundario" id="btn-cancelar">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-principal">
+              Salvar alterações
+            </button>
+          </section>
+        </form>
+      </main>
+    </div>
+
+    <script src="../js/perfil-gestor.js"></script>
+    <script src="../js/menu-mobile.js"></script>
+    <script src="../js/dark-mode.js"></script> 
+  </body>
+</html>

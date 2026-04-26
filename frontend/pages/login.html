@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SIGOS</title>
+    <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+    <main id="login-container">
+        <div id="imagem">
+            <img src="../imagens/Logo_clara.png" alt="Logo do sistema SIGOS">
+        </div>
+
+        <div id="content-login">
+
+            <form id="form-login">
+                <div class="item-form">
+                    <label for="matricula">Matrícula</label>
+                    <input
+                        type="text"
+                        name="matricula"
+                        id="matricula"
+                        placeholder="Digite sua matrícula"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="item-form">
+                    <label for="senha">Senha</label>
+                    <div class="senha-container">
+                        <input
+                            type="password"
+                            name="senha"
+                            id="senha"
+                            placeholder="Digite sua senha"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <i class="fa-solid fa-eye" id="toggle-senha" title="Mostrar senha"></i>
+                    </div>
+                </div>
+
+                <p id="mensagem-login" aria-live="polite"></p>
+
+                <button type="submit">Acessar</button>
+                <a href="esqueceu-senha.html">Esqueceu sua senha? Clique aqui</a>
+            </form>
+        </div>
+    </main>
+
+    <script src="../js/login.js"></script>
+</body>
+</html>

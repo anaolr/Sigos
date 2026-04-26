@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notificações do Administrador</title>
+    <link rel="stylesheet" href="../css/notificacoes-admin.css" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+</head>
+<body>
+    <header>
+        <div id="imagem">
+            <img src="../imagens/Logo_cortada.png" alt="Logo do sistema" />
+        </div>
+        <h2>Notificações do Administrador</h2>
+    </header>
+
+    <div id="dashboard">
+        <aside id="painel">
+            <div id="usuario">
+                <div id="img-usuario">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <span>Administrador</span>
+                <span id="nome-sidebar">Nome do usuário</span>
+            </div>
+
+            <nav id="ferramentas">
+                <div class="link-menu">
+                    <i class="fa-solid fa-user"></i>
+                    <a href="./perfil-admin.html">Perfil</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <a href="./cadastro-usuario.html">Cadastro</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <a href="./dashboard-admin.html">Dashboard</a>
+                </div>
+
+                <div class="link-menu">
+                    <i class="fa-solid fa-bell"></i>
+                    <a href="./notificacoes-admin.html">Notificações</a>
+                </div>
+            </nav>
+
+            <button
+                id="btn-logout"
+                type="button"
+                onclick="window.location.href='../pages/login.html'"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </button>
+        </aside>
+
+        <main id="content-notificacoes">
+            <div id="topo-notificacoes">
+                <div>
+                    <h1>Feed de notificações</h1>
+                    <p id="resumo-nao-lidas">Você tem 3 notificações não lidas</p>
+                </div>
+
+                <button id="btn-marcar-lidas" type="button">
+                    Marcar todas como lidas
+                </button>
+            </div>
+
+            <section id="lista-notificacoes">
+                <!-- preenchido pelo JS -->
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/notificacoes-admin.js"></script>
+    <script src="../js/menu-mobile.js"></script>
+    <script src="../js/dark-mode.js"></script> 
+</body>
+</html>

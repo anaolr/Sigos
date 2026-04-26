@@ -1,0 +1,338 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #000;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 20px;
+    background-color: #1E4F8A;
+}
+
+#imagem {
+    width: 80px;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+#imagem img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+#dashboard {
+    display: flex;
+    flex: 1;
+}
+
+#painel {
+    width: 260px;
+    min-height: 100vh;
+    background-color: #1E4F8A;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px 20px;
+}
+
+#usuario-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#img-usuario {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: white;
+    color: #1E4F8A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+#usuario-box span:first-of-type {
+    font-weight: bold;
+}
+
+#nome-sidebar {
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+#ferramentas {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.link-menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.link-menu i {
+    width: 18px;
+    text-align: center;
+}
+
+.link-menu a {
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.link-menu a:hover {
+    color: #061f3d;
+}
+
+#btn-logout {
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: none;
+    background-color: #061f3d;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 1rem;
+}
+
+#btn-logout:hover {
+    background-color: #0b2f59;
+}
+
+#content-cadastro {
+    flex: 1;
+    background-color: #f4f6f8;
+    color: #000;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+#content-cadastro h1 {
+    color: #1E4F8A;
+    margin-bottom: 30px;
+}
+
+#form-cadastro-usuario {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    align-items: start;
+}
+
+.dados {
+    background-color: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dados h2 {
+    color: #1E4F8A;
+    margin-bottom: 10px;
+}
+
+.dados label {
+    font-weight: bold;
+    color: #1E4F8A;
+    margin-bottom: -8px;
+}
+
+.dados input,
+.dados select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.dados input:focus,
+.dados select:focus {
+    border-color: #1E4F8A;
+    box-shadow: 0 0 5px rgba(30, 79, 138, 0.4);
+}
+
+#mensagem-cadastro {
+    min-height: 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #d62828;
+}
+
+#buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.btn-salvar,
+.btn-cancelar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.btn-salvar {
+    background-color: #1E4F8A;
+    color: white;
+}
+
+.btn-salvar:hover {
+    background-color: #0b2f59;
+}
+
+.btn-cancelar {
+    background-color: #d9e2ec;
+    color: #1E4F8A;
+}
+
+.btn-cancelar:hover {
+    background-color: #c4d2df;
+}
+
+@media (max-width: 1024px) {
+    #painel {
+        width: 220px;
+        padding: 25px 16px;
+    }
+
+    #content-cadastro {
+        padding: 24px;
+    }
+
+    .cards-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    #dashboard {
+        flex-direction: column;
+    }
+
+    #painel {
+        width: 100%;
+        min-height: auto;
+        padding: 20px;
+        gap: 24px;
+    }
+
+    #usuario {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 16px;
+    }
+
+    #img-usuario {
+        width: 70px;
+        height: 70px;
+        font-size: 1.5rem;
+    }
+
+    #ferramentas {
+        margin-top: 0;
+    }
+
+    #content-cadastro {
+        padding: 20px 16px;
+    }
+
+    #buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-salvar,
+    .btn-cancelar {
+        width: 100%;
+    }
+
+    header {
+        padding: 12px 16px;
+        gap: 12px;
+    }
+
+    header h2 {
+        font-size: 1.2rem;
+    }
+
+    #imagem {
+        width: 60px;
+        height: 45px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 0.95rem;
+    }
+   
+
+    #usuario {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .dados {
+        padding: 18px;
+    }
+
+    .dados h2 {
+        font-size: 1.1rem;
+    }
+
+    .dados input,
+    .dados select {
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+
+    #btn-logout {
+        width: 100%;
+    }
+}
