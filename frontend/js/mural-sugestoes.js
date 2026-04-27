@@ -1,99 +1,110 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const nomeSidebar = document.getElementById("nome-sidebar");
-    const containerMural = document.getElementById("container-mural-completo");
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    const nome = localStorage.getItem("nome");
 
-    const usuarioString = localStorage.getItem("usuarioLogado");
-
-    if (!usuarioString) {
+    if (!token || role !== "funcionario") {
+        localStorage.clear();
         window.location.href = "./login.html";
         return;
     }
 
-    const funcionarioMock = JSON.parse(usuarioString);
+    const nomeSidebar = document.getElementById("nome-sidebar");
+    if (nomeSidebar && nome) nomeSidebar.textContent = nome;
 
-    const sugestoesMuralMock = [
-        {
-            id: 1,
-            titulo: "Máquina de Café Expressa",
-            descricao: "Substituir a garrafa térmica por uma máquina de cápsulas na copa do segundo andar.",
-            setor: "Copa",
-            votos: 10
-        },
-        {
-            id: 2,
-            titulo: "Ginástica Laboral",
-            descricao: "Implementar 15 minutos de alongamento guiado para as equipes de TI.",
-            setor: "Saúde",
-            votos: 15
-        }
-    ];
+    const btnSair = document.getElementById("btn-logout");
+    if (btnSair) {
+        btnSair.addEventListener("click", (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = "./login.html";
+        });
+    }
 
+    const containerMural = document.getElementById("container-mural-completo");
+    let sugestoesMural = [];
     let votosUsuario = JSON.parse(localStorage.getItem("votosSugestoes")) || [];
 
-    function preencherDadosUsuario() {
-        if (nomeSidebar) nomeSidebar.textContent = funcionarioMock.nome;
+    async function carregarMural() {
+        try {
+            const response = await fetch("http://localhost:3000/api/sugestoes", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (response.ok) {
+                sugestoesMural = await response.json();
+                renderizarMural();
+            }
+        } catch (erro) {
+            console.error("Erro ao carregar mural:", erro);
+        }
     }
 
     function renderizarMural() {
         if (!containerMural) return;
-
         containerMural.innerHTML = "";
 
-        sugestoesMuralMock.forEach((sugestao) => {
-            const jaVotou = votosUsuario.includes(sugestao.id);
+        if(sugestoesMural.length === 0) {
+            containerMural.innerHTML = "<p>Nenhuma sugestão enviada ainda.</p>";
+            return;
+        }
 
+        sugestoesMural.forEach((sugestao) => {
+            const jaVotou = votosUsuario.includes(sugestao.id);
             const article = document.createElement("article");
             article.classList.add("sugestao-card");
 
             article.innerHTML = `
                 <div class="sugestao-topo">
-                    <span class="tag-setor">${sugestao.setor}</span>
-                    <span class="votos">
-                        <i class="fa-solid fa-thumbs-up"></i>
-                        ${sugestao.votos}
-                    </span>
+                    <span class="tag-setor">${sugestao.setorOrigem || "Geral"}</span>
+                    <span class="votos"><i class="fa-solid fa-thumbs-up"></i> <span id="votos-${sugestao.id}">${sugestao.votos || 0}</span></span>
                 </div>
-
                 <h3>${sugestao.titulo}</h3>
-
                 <p>${sugestao.descricao}</p>
-
                 <div class="acoes-sugestao">
-                    <button class="btn-votar ${jaVotou ? "votado" : ""}" data-id="${sugestao.id}">
+                    <button class="btn-votar ${jaVotou ? "votado" : ""}" data-id="${sugestao.id}" data-votos="${sugestao.votos || 0}">
                         <i class="fa-solid ${jaVotou ? "fa-check" : "fa-thumbs-up"}"></i>
                         ${jaVotou ? "Votado" : "Apoiar sugestão"}
                     </button>
                 </div>
             `;
-
             containerMural.appendChild(article);
         });
-
         adicionarEventosVoto();
     }
 
     function adicionarEventosVoto() {
-        const botoesVoto = document.querySelectorAll(".btn-votar");
-
-        botoesVoto.forEach((botao) => {
-            botao.addEventListener("click", () => {
+        document.querySelectorAll(".btn-votar").forEach((botao) => {
+            botao.addEventListener("click", async () => {
                 if (botao.classList.contains("votado")) return;
-
+                
                 const idSugestao = Number(botao.dataset.id);
-                const sugestao = sugestoesMuralMock.find(item => item.id === idSugestao);
+                let qtdVotos = Number(botao.dataset.votos) + 1;
 
-                if (!sugestao) return;
+                try {
+                    // Atualiza no Banco de Dados
+                    const response = await fetch(`http://localhost:3000/api/sugestoes/${idSugestao}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ votos: qtdVotos })
+                    });
 
-                sugestao.votos += 1;
-                votosUsuario.push(idSugestao);
-
-                localStorage.setItem("votosSugestoes", JSON.stringify(votosUsuario));
-
-                renderizarMural();
+                    if (response.ok) {
+                        votosUsuario.push(idSugestao);
+                        localStorage.setItem("votosSugestoes", JSON.stringify(votosUsuario));
+                        
+                        botao.classList.add("votado");
+                        botao.innerHTML = `<i class="fa-solid fa-check"></i> Votado`;
+                        document.getElementById(`votos-${idSugestao}`).textContent = qtdVotos;
+                    }
+                } catch (erro) {
+                    console.error("Erro ao computar voto", erro);
+                }
             });
         });
     }
 
-    preencherDadosUsuario();
-    renderizarMural();
+    carregarMural();
 });

@@ -23,10 +23,12 @@ const User = sequelize.define("User", {
         type: DataTypes.STRING,
         allowNull: true, // Necessário para o cargo
     },
-    setor: {
-        type: DataTypes.STRING,
-        allowNull: true, // Necessário para o setor
-    },
+   setor: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  foto: DataTypes.STRING // <-- ADICIONE ESTA LINHA
+,
     role: {
         type: DataTypes.ENUM("admin", "gestor", "funcionario"),
         defaultValue: "funcionario",

@@ -1,4 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // ==========================================
+    // 1. PORTEIRO DE SEGURANÇA E LOGOUT
+    // ==========================================
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    const nome = localStorage.getItem("nome");
+
+    if (!token || role !== "gestor") {
+        localStorage.clear();
+        window.location.href = "./login.html";
+        return;
+    }
+
+    const nomeSidebar = document.getElementById("nome-sidebar");
+    if (nomeSidebar && nome) nomeSidebar.textContent = nome;
+
+    const btnSair = document.getElementById("btn-logout");
+    if (btnSair) {
+        btnSair.addEventListener("click", (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = "./login.html";
+        });
+    }
+
+    // ==========================================
+    // 2. LÓGICA DA PÁGINA
+    // ==========================================
     const form = document.getElementById("form-perfil-gestor");
     const btnCancelar = document.getElementById("btn-cancelar");
     const btnAlterarFoto = document.getElementById("btn-alterar-foto");
@@ -6,8 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const previewFoto = document.getElementById("preview-foto");
     const iconeFoto = document.getElementById("icone-foto");
     const mensagem = document.getElementById("mensagem-perfil");
-    const nomeSidebar = document.getElementById("nome-sidebar");
-  
+
     const campos = {
       nome: document.getElementById("nome"),
       matricula: document.getElementById("matricula"),
@@ -18,25 +45,30 @@ document.addEventListener("DOMContentLoaded", () => {
       senha: document.getElementById("senha"),
       confirmarSenha: document.getElementById("confirmar-senha"),
     };
-  
-    const usuarioString = localStorage.getItem("usuarioLogado");
-  if (!usuarioString) window.location.href = "./login.html";
-  const gestorMock = JSON.parse(usuarioString);
-  
+
+    // Criamos um gestor mock básico para não quebrar a tela enquanto não liga ao back-end
+    const gestorMock = {
+        nome: nome,
+        matricula: "0000", // Aqui no futuro virá do fetch ao backend
+        email: "gestor@email.com",
+        tipo_usuario: "Gestor",
+        cargo: "Gestão",
+        setor: "TI"
+    };
+
     let dadosOriginais = {};
     let fotoOriginal = "";
-  
+
     function preencherFormulario(dados) {
-      campos.nome.value = dados.nome || "";
-      campos.matricula.value = dados.matricula || "";
-      campos.email.value = dados.email || "";
-      campos.tipoUsuario.value = dados.tipo_usuario || "";
-      campos.cargo.value = dados.cargo || "";
-      campos.setor.value = dados.setor || "";
-      campos.senha.value = "";
-      campos.confirmarSenha.value = "";
-      nomeSidebar.textContent = dados.nome || "Nome do usuário";
-  
+      if(campos.nome) campos.nome.value = dados.nome || "";
+      if(campos.matricula) campos.matricula.value = dados.matricula || "";
+      if(campos.email) campos.email.value = dados.email || "";
+      if(campos.tipoUsuario) campos.tipoUsuario.value = dados.tipo_usuario || "";
+      if(campos.cargo) campos.cargo.value = dados.cargo || "";
+      if(campos.setor) campos.setor.value = dados.setor || "";
+      if(campos.senha) campos.senha.value = "";
+      if(campos.confirmarSenha) campos.confirmarSenha.value = "";
+
       if (dados.foto) {
         previewFoto.src = dados.foto;
         previewFoto.style.display = "block";
@@ -47,15 +79,12 @@ document.addEventListener("DOMContentLoaded", () => {
         iconeFoto.style.display = "block";
       }
     }
-  
+
     function salvarEstadoOriginal(dados) {
-      dadosOriginais = {
-        nome: dados.nome || "",
-        email: dados.email || "",
-      };
+      dadosOriginais = { nome: dados.nome || "", email: dados.email || "" };
       fotoOriginal = dados.foto || "";
     }
-  
+
     function restaurarFormulario() {
       campos.nome.value = dadosOriginais.nome || "";
       campos.email.value = dadosOriginais.email || "";
@@ -63,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
       campos.confirmarSenha.value = "";
       nomeSidebar.textContent = dadosOriginais.nome || "Nome do usuário";
       mensagem.textContent = "";
-  
+
       if (fotoOriginal) {
         previewFoto.src = fotoOriginal;
         previewFoto.style.display = "block";
@@ -73,149 +102,73 @@ document.addEventListener("DOMContentLoaded", () => {
         previewFoto.style.display = "none";
         iconeFoto.style.display = "block";
       }
-  
       inputFoto.value = "";
     }
-  
+
     function validarFormulario() {
-      const nome = campos.nome.value.trim();
-      const email = campos.email.value.trim();
-      const senha = campos.senha.value;
-      const confirmarSenha = campos.confirmarSenha.value;
-  
-      if (!nome) {
-        mensagem.textContent = "O nome é obrigatório.";
-        campos.nome.focus();
-        return false;
+      const nomeVal = campos.nome.value.trim();
+      const emailVal = campos.email.value.trim();
+      const senhaVal = campos.senha.value;
+      const confirmarSenhaVal = campos.confirmarSenha.value;
+
+      if (!nomeVal) { mensagem.textContent = "O nome é obrigatório."; return false; }
+      if (!emailVal) { mensagem.textContent = "O e-mail é obrigatório."; return false; }
+      if (senhaVal || confirmarSenhaVal) {
+        if (senhaVal.length < 6) { mensagem.textContent = "A nova senha deve ter pelo menos 6 caracteres."; return false; }
+        if (senhaVal !== confirmarSenhaVal) { mensagem.textContent = "As senhas não coincidem."; return false; }
       }
-  
-      if (!email) {
-        mensagem.textContent = "O e-mail é obrigatório.";
-        campos.email.focus();
-        return false;
-      }
-  
-      if (senha || confirmarSenha) {
-        if (senha.length < 6) {
-          mensagem.textContent = "A nova senha deve ter pelo menos 6 caracteres.";
-          campos.senha.focus();
-          return false;
-        }
-  
-        if (senha !== confirmarSenha) {
-          mensagem.textContent = "As senhas não coincidem.";
-          campos.confirmarSenha.focus();
-          return false;
-        }
-      }
-  
       return true;
     }
-  
+
     async function salvarAlteracoes(event) {
       event.preventDefault();
       mensagem.textContent = "";
-  
       if (!validarFormulario()) return;
-  
-      const payload = {
-        nome: campos.nome.value.trim(),
-        email: campos.email.value.trim(),
-      };
-  
-      if (campos.senha.value.trim()) {
-        payload.senha = campos.senha.value.trim();
+
+      mensagem.style.color = "green";
+      mensagem.textContent = "Alterações salvas com sucesso.";
+      dadosOriginais.nome = campos.nome.value.trim();
+      dadosOriginais.email = campos.email.value.trim();
+      nomeSidebar.textContent = dadosOriginais.nome;
+      
+      // Atualiza também no localStorage para manter a coerência visual
+      localStorage.setItem("nome", dadosOriginais.nome);
+
+      if (previewFoto.src && previewFoto.style.display === "block") {
+        fotoOriginal = previewFoto.src;
       }
-  
-      if (inputFoto.files[0]) {
-        payload.foto = inputFoto.files[0].name;
-      }
-  
-      try {
-        console.log("Dados enviados:", payload);
-  
-        // Exemplo futuro com backend:
-        /*
-        const formData = new FormData();
-        formData.append("nome", campos.nome.value.trim());
-        formData.append("email", campos.email.value.trim());
-  
-        if (campos.senha.value.trim()) {
-          formData.append("senha", campos.senha.value.trim());
-        }
-  
-        if (inputFoto.files[0]) {
-          formData.append("foto", inputFoto.files[0]);
-        }
-  
-        const response = await fetch(`http://localhost:3000/usuarios/${gestorMock.id}`, {
-          method: "PUT",
-          body: formData
-        });
-  
-        const resultado = await response.json();
-  
-        if (!response.ok) {
-          throw new Error(resultado.message || "Erro ao salvar alterações.");
-        }
-        */
-  
-        mensagem.style.color = "green";
-        mensagem.textContent = "Alterações salvas com sucesso.";
-  
-        dadosOriginais.nome = payload.nome;
-        dadosOriginais.email = payload.email;
-        nomeSidebar.textContent = payload.nome;
-  
-        if (previewFoto.src && previewFoto.style.display === "block") {
-          fotoOriginal = previewFoto.src;
-        }
-  
-        campos.senha.value = "";
-        campos.confirmarSenha.value = "";
-        inputFoto.value = "";
-      } catch (error) {
-        console.error(error);
-        mensagem.style.color = "#d62828";
-        mensagem.textContent = "Não foi possível salvar as alterações.";
-      }
+      campos.senha.value = "";
+      campos.confirmarSenha.value = "";
+      inputFoto.value = "";
     }
-  
-    btnAlterarFoto.addEventListener("click", () => {
-      inputFoto.click();
-    });
-  
+
+    btnAlterarFoto.addEventListener("click", () => inputFoto.click());
+
     inputFoto.addEventListener("change", (event) => {
       const arquivo = event.target.files[0];
-  
       if (!arquivo) return;
-  
       if (!arquivo.type.startsWith("image/")) {
         mensagem.style.color = "#d62828";
         mensagem.textContent = "Selecione um arquivo de imagem válido.";
-        inputFoto.value = "";
-        return;
+        inputFoto.value = ""; return;
       }
-  
       const leitor = new FileReader();
-  
       leitor.onload = function (e) {
         previewFoto.src = e.target.result;
         previewFoto.style.display = "block";
         iconeFoto.style.display = "none";
         mensagem.textContent = "";
       };
-  
       leitor.readAsDataURL(arquivo);
     });
-  
+
     campos.nome.addEventListener("input", () => {
       nomeSidebar.textContent = campos.nome.value.trim() || "Nome do usuário";
     });
-  
+
     btnCancelar.addEventListener("click", restaurarFormulario);
     form.addEventListener("submit", salvarAlteracoes);
-  
+
     preencherFormulario(gestorMock);
     salvarEstadoOriginal(gestorMock);
-  });
+});

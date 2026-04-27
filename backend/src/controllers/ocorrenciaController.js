@@ -5,9 +5,16 @@ import { Ocorrencia, User } from "../models/index.js";
 // ======================================
 export const criar = async (req, res) => {
   try {
+    const dados = { ...req.body };
+
+    // Se o multer capturou um ficheiro, ele cria o 'req.file'
+    if (req.file) {
+      dados.anexo = req.file.filename; // Guardamos apenas o nome (ex: 1714000000.jpg) no MySQL
+    }
+
     const ocorrencia = await Ocorrencia.create({
-      ...req.body,
-      UserId: req.user.id // Pega o ID do token JWT gerado no login
+      ...dados,
+      UserId: req.user.id 
     });
 
     res.status(201).json({ 

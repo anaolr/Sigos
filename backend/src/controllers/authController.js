@@ -12,11 +12,9 @@ export const login = async (req, res) => {
     });
 
     if (!user || user.senha !== senha) {
-      return res
-        .status(401)
-        .json({
-          message: "Dados incorretos. Verifique matrícula/email e senha.",
-        });
+      return res.status(401).json({
+        message: "Dados incorretos. Verifique matrícula/email e senha.",
+      });
     }
 
     const token = jwt.sign(
@@ -27,22 +25,17 @@ export const login = async (req, res) => {
 
     return res.json({ token, role: user.role, nome: user.nome });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Erro interno", error: error.message });
+    return res.status(500).json({ message: "Erro interno", error: error.message });
   }
 };
 
 export const register = async (req, res) => {
   try {
-    // AQUI ESTÁ O SEGREDO: Extrair TODOS os 7 campos do frontend
     const { nome, email, senha, role, matricula, cargo, setor } = req.body;
 
     const userExists = await User.findOne({ where: { email } });
-    if (userExists)
-      return res.status(400).json({ message: "Email já existe!" });
+    if (userExists) return res.status(400).json({ message: "Email já existe!" });
 
-    // Enviar TODOS os 7 campos para o Sequelize (Base de dados)
     await User.create({
       nome,
       email,
@@ -56,15 +49,38 @@ export const register = async (req, res) => {
     return res.status(201).json({ message: "Utilizador criado com sucesso!" });
   } catch (error) {
     console.error("🚨 ERRO NO CADASTRO:", error);
-    return res
-      .status(500)
-      .json({ message: "Erro ao criar utilizador", error: error.message });
+    return res.status(500).json({ message: "Erro ao criar utilizador", error: error.message });
   }
 };
 
 export const forgotPassword = async (req, res) => res.json({ m: "ok" });
 export const resetPassword = async (req, res) => res.json({ m: "ok" });
+
 export const getProfile = async (req, res) => {
   const user = await User.findByPk(req.user.id);
   res.json(user);
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { nome, email, senha } = req.body;
+    const user = await User.findByPk(req.user.id);
+    
+    if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
+
+    if (nome) user.nome = nome;
+    if (email) user.email = email;
+    if (senha && senha.trim() !== "") user.senha = senha;
+
+    // Se o multer recebeu uma foto do frontend, guarda-a no banco!
+    if (req.file) {
+      user.foto = req.file.filename;
+    }
+
+    await user.save();
+    res.json({ message: "Perfil atualizado com sucesso!", nome: user.nome, foto: user.foto });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erro ao atualizar", error: error.message });
+  }
 };

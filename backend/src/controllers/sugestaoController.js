@@ -1,13 +1,20 @@
 import { Sugestao, User } from "../models/index.js";
 
 // ======================================
-// 1. CRIAR SUGESTÃO
+// 1. CRIAR SUGESTÃO (COM ANEXO)
 // ======================================
 export const criar = async (req, res) => {
   try {
+    const dados = { ...req.body };
+
+    // Se houver uma imagem, guardamos o nome no banco
+    if (req.file) {
+      dados.anexo = req.file.filename;
+    }
+
     const sugestao = await Sugestao.create({
-      ...req.body,
-      UserId: req.user.id // Pega o ID do token JWT gerado no login
+      ...dados,
+      UserId: req.user.id // Pega o ID do token JWT
     });
 
     res.status(201).json({ 
@@ -21,7 +28,7 @@ export const criar = async (req, res) => {
 };
 
 // ======================================
-// 2. LISTAR AS MINHAS SUGESTÕES (Funcionário/Gestor)
+// 2. LISTAR AS MINHAS SUGESTÕES
 // ======================================
 export const minhas = async (req, res) => {
   try {
@@ -38,14 +45,14 @@ export const minhas = async (req, res) => {
 };
 
 // ======================================
-// 3. LISTAR TODAS AS SUGESTÕES (Admin/Gestor)
+// 3. LISTAR TODAS AS SUGESTÕES
 // ======================================
 export const todas = async (req, res) => {
   try {
     const lista = await Sugestao.findAll({
       include: [{
         model: User,
-        attributes: ['id', 'nome', 'email', 'perfil'] // Evita trazer a senha do usuário
+        attributes: ['id', 'nome', 'email', 'role'] // Evita trazer a senha do usuário
       }],
       order: [['createdAt', 'DESC']]
     });
@@ -63,22 +70,20 @@ export const todas = async (req, res) => {
 export const obterPorId = async (req, res) => {
   try {
     const { id } = req.params;
-
+    
+    // Busca a sugestão e faz o "JOIN" para trazer o nome e setor do autor
     const sugestao = await Sugestao.findByPk(id, {
-      include: [{
-        model: User,
-        attributes: ['id', 'nome', 'email']
-      }]
+      include: [{ model: User, attributes: ["nome", "email", "setor"] }]
     });
 
     if (!sugestao) {
-      return res.status(404).json({ erro: "Sugestão não encontrada." });
+      return res.status(404).json({ erro: "Sugestão não encontrada no banco." });
     }
 
     res.json(sugestao);
   } catch (error) {
     console.error("Erro ao buscar sugestão:", error);
-    res.status(500).json({ erro: "Erro interno ao buscar detalhes da sugestão." });
+    res.status(500).json({ erro: "Erro interno do servidor." });
   }
 };
 

@@ -1,23 +1,27 @@
 import express from "express";
-import * as controller from "../controllers/sugestaoController.js";
+import multer from "multer";
+import path from "path";
+import { criar, minhas, todas, atualizar, obterPorId } from "../controllers/sugestaoController.js";
 import { auth } from "../middlewares/authMiddleware.js";
-import { isGestor } from "../middlewares/roleMiddleware.js";
+
+// CONFIGURAÇÃO DO MULTER PARA AS SUGESTÕES
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-// ==============================
-// ROTAS GERAIS (Qualquer usuário logado)
-// ==============================
-router.post("/", auth, controller.criar);
-router.get("/minhas", auth, controller.minhas);
-
-// ROTA NOVA: Obter detalhe de uma sugestão pelo ID (Atenção: sempre depois de "/minhas")
-router.get("/:id", auth, controller.obterPorId);
-
-// ==============================
-// ROTAS DE GESTÃO (Apenas Gestor/Admin)
-// ==============================
-router.get("/", auth, isGestor, controller.todas);
-router.put("/:id", auth, isGestor, controller.atualizar);
+// A ROTA POST AGORA TEM O UPLOAD
+router.post("/", auth, upload.single("anexo"), criar);
+router.get("/minhas", auth, minhas);
+router.get("/todas", auth, todas);
+router.get("/:id", auth, obterPorId);
+router.put("/:id", auth, atualizar);
 
 export default router;

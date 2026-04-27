@@ -1,10 +1,37 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // ==========================================
+    // 1. PORTEIRO DE SEGURANÇA E LOGOUT
+    // ==========================================
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    const nome = localStorage.getItem("nome");
+
+    if (!token || role !== "gestor") {
+        localStorage.clear();
+        window.location.href = "./login.html";
+        return; // Pára a execução
+    }
+
+    const nomeSidebar = document.getElementById("nome-sidebar");
+    if (nomeSidebar && nome) nomeSidebar.textContent = nome;
+
+    const btnSair = document.getElementById("btn-logout");
+    if (btnSair) {
+        btnSair.addEventListener("click", (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = "./login.html";
+        });
+    }
+
+    // ==========================================
+    // 2. LÓGICA DA PÁGINA
+    // ==========================================
     const params = new URLSearchParams(window.location.search);
     const prioridadeUrl = params.get("prioridade");
     const statusUrl = params.get("status");
     const tipoUrl = params.get("tipo");
 
-    const nomeSidebar = document.getElementById("nome-sidebar");
     const lista = document.getElementById("lista-solicitacoes");
     const filtros = document.querySelectorAll(".filtro");
     const inputBusca = document.getElementById("input-busca");
@@ -14,243 +41,125 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalSugestoes = document.getElementById("total-sugestoes");
     const totalEmAnalise = document.getElementById("total-em-analise");
 
-    const usuarioString = localStorage.getItem("usuarioLogado");
-    if (!usuarioString) {
-        window.location.href = "./login.html";
-        return;
-    }
-
-    const gestor = JSON.parse(usuarioString);
-
-    const solicitacoes = [
-        {
-            id: 1,
-            tipo: "ocorrencia",
-            titulo: "Computador não liga",
-            descricao: "O computador do RH não liga desde ontem.",
-            status: "em_analise",
-            prioridade: "alta",
-            data: "13/04/2026",
-            setor_origem: "RH",
-            setor_responsavel: "TI",
-            autor: "Maria Oliveira",
-            matricula: "2024015"
-        },
-        {
-            id: 2,
-            tipo: "ocorrencia",
-            titulo: "Impressora travando",
-            descricao: "A impressora do setor administrativo está travando com frequência.",
-            status: "em_andamento",
-            prioridade: "media",
-            data: "12/04/2026",
-            setor_origem: "Administrativo",
-            setor_responsavel: "TI",
-            autor: "João Pedro",
-            matricula: "2024020"
-        },
-        {
-            id: 3,
-            tipo: "sugestao",
-            titulo: "Melhorar iluminação",
-            descricao: "Instalar novas luminárias no corredor principal.",
-            status: "em_analise",
-            data: "11/04/2026",
-            setor_origem: "Administrativo",
-            setor_responsavel: "Administrativo",
-            autor: "Carlos Lima",
-            matricula: "2024033"
-        },
-        {
-            id: 4,
-            tipo: "sugestao",
-            titulo: "Criar quadro de avisos",
-            descricao: "Um quadro de avisos ajudaria na comunicação interna.",
-            status: "aprovada",
-            data: "10/04/2026",
-            setor_origem: "RH",
-            setor_responsavel: "RH",
-            autor: "Fernanda Rocha",
-            matricula: "2024008"
-        },
-        {
-            id: 5,
-            tipo: "ocorrencia",
-            titulo: "Fio exposto no corredor",
-            descricao: "Há um fio exposto próximo à recepção.",
-            status: "concluida",
-            prioridade: "alta",
-            data: "09/04/2026",
-            setor_origem: "Recepção",
-            setor_responsavel: "Manutenção",
-            autor: "Ana Souza",
-            matricula: "2024050"
-        },
-        {
-            id: 6,
-            tipo: "ocorrencia",
-            titulo: "Ar-condicionado fraco",
-            descricao: "O ar-condicionado da sala de reuniões não está gelando bem.",
-            status: "aberta",
-            prioridade: "baixa",
-            data: "08/04/2026",
-            setor_origem: "Administrativo",
-            setor_responsavel: "Manutenção",
-            autor: "Lucas Mendes",
-            matricula: "2024061"
-        }
-    ];
-
+    let solicitacoes = [];
     let filtroAtual = "todas";
-
-    nomeSidebar.textContent = gestor.nome;
 
     if (tipoUrl === "ocorrencia" || tipoUrl === "sugestao") {
         filtroAtual = tipoUrl;
     }
 
-    function formatarStatus(status) {
-        const mapa = {
-            aberta: "Aberta",
-            enviada: "Enviada",
-            em_analise: "Em análise",
-            em_andamento: "Em andamento",
-            concluida: "Concluída",
-            aprovada: "Aprovada",
-            rejeitada: "Rejeitada"
-        };
+    async function carregarDadosDoBanco() {
+        try {
+            const headers = {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            };
 
+            const [respostaOcorrencias, respostaSugestoes] = await Promise.all([
+                fetch("http://localhost:3000/api/ocorrencias", { headers }),
+                fetch("http://localhost:3000/api/sugestoes", { headers })
+            ]);
+
+            let ocorrenciasDB = respostaOcorrencias.ok ? await respostaOcorrencias.json() : [];
+            let sugestoesDB = respostaSugestoes.ok ? await respostaSugestoes.json() : [];
+
+            const ocorrenciasFormatadas = ocorrenciasDB.map(oco => ({
+                id: oco.id, tipo: "ocorrencia", titulo: oco.titulo, descricao: oco.descricao,
+                status: oco.status || "em_analise", prioridade: oco.prioridade || "media",
+                data: new Date(oco.createdAt).toLocaleDateString('pt-BR'),
+                setor_origem: oco.setorOrigem || "N/A", setor_responsavel: oco.setorResponsavel || "N/A",
+                autor: oco.User ? oco.User.nome : "Desconhecido", matricula: oco.User ? oco.User.id : "N/A"
+            }));
+
+            const sugestoesFormatadas = sugestoesDB.map(sug => ({
+                id: sug.id, tipo: "sugestao", titulo: sug.titulo, descricao: sug.descricao,
+                status: sug.status || "em_analise", data: new Date(sug.createdAt).toLocaleDateString('pt-BR'),
+                setor_origem: sug.setorOrigem || "N/A", setor_responsavel: sug.setorResponsavel || "N/A",
+                autor: sug.User ? sug.User.nome : "Desconhecido", matricula: sug.User ? sug.User.id : "N/A"
+            }));
+
+            solicitacoes = [...ocorrenciasFormatadas, ...sugestoesFormatadas];
+
+            atualizarResumo();
+            aplicarFiltroVisualInicial();
+            renderizar();
+
+        } catch (erro) {
+            console.error("Erro de conexão:", erro);
+            if(lista) lista.innerHTML = `<div class="card-vazia"><h3>Erro</h3><p>Não foi possível carregar os dados.</p></div>`;
+        }
+    }
+
+    function formatarStatus(status) {
+        const mapa = { aberta: "Aberta", enviada: "Enviada", em_analise: "Em análise", em_andamento: "Em andamento", concluida: "Concluída", aprovada: "Aprovada", rejeitada: "Rejeitada" };
         return mapa[status] || status;
     }
 
     function formatarPrioridade(prioridade) {
-        const mapa = {
-            baixa: "Baixa",
-            media: "Média",
-            alta: "Alta",
-            critica: "Crítica"
-        };
-
+        const mapa = { baixa: "Baixa", media: "Média", alta: "Alta", critica: "Crítica" };
         return mapa[prioridade] || prioridade;
     }
 
     function atualizarResumo() {
-        totalItens.textContent = solicitacoes.length;
-        totalOcorrencias.textContent = solicitacoes.filter(item => item.tipo === "ocorrencia").length;
-        totalSugestoes.textContent = solicitacoes.filter(item => item.tipo === "sugestao").length;
-        totalEmAnalise.textContent = solicitacoes.filter(item => item.status === "em_analise").length;
+        if(totalItens) totalItens.textContent = solicitacoes.length;
+        if(totalOcorrencias) totalOcorrencias.textContent = solicitacoes.filter(item => item.tipo === "ocorrencia").length;
+        if(totalSugestoes) totalSugestoes.textContent = solicitacoes.filter(item => item.tipo === "sugestao").length;
+        if(totalEmAnalise) totalEmAnalise.textContent = solicitacoes.filter(item => item.status === "em_analise").length;
     }
 
     function filtrarSolicitacoes() {
-        const termo = inputBusca.value.trim().toLowerCase();
-
+        const termo = inputBusca ? inputBusca.value.trim().toLowerCase() : "";
         return solicitacoes.filter((item) => {
             const bateFiltroTipo = filtroAtual === "todas" || item.tipo === filtroAtual;
-
-            const bateFiltroPrioridade =
-                !prioridadeUrl ||
-                (item.tipo === "ocorrencia" && item.prioridade === prioridadeUrl);
-
-            const bateFiltroStatus =
-                !statusUrl || item.status === statusUrl;
-
-            const textoCompleto = `
-                ${item.titulo}
-                ${item.descricao}
-                ${item.setor_origem}
-                ${item.setor_responsavel}
-                ${item.autor}
-                ${item.matricula}
-                ${item.status || ""}
-                ${item.prioridade || ""}
-            `.toLowerCase();
-
-            const bateBusca = textoCompleto.includes(termo);
-
-            return (
-                bateFiltroTipo &&
-                bateFiltroPrioridade &&
-                bateFiltroStatus &&
-                bateBusca
-            );
+            const bateFiltroPrioridade = !prioridadeUrl || (item.tipo === "ocorrencia" && item.prioridade === prioridadeUrl);
+            const bateFiltroStatus = !statusUrl || item.status === statusUrl;
+            const textoCompleto = `${item.titulo} ${item.descricao} ${item.setor_origem} ${item.setor_responsavel} ${item.autor} ${item.matricula} ${item.status||""} ${item.prioridade||""}`.toLowerCase();
+            return bateFiltroTipo && bateFiltroPrioridade && bateFiltroStatus && textoCompleto.includes(termo);
         });
     }
 
     function renderizar() {
+        if (!lista) return;
         lista.innerHTML = "";
-
         const itens = filtrarSolicitacoes();
 
         if (itens.length === 0) {
-            lista.innerHTML = `
-                <div class="card-vazia">
-                    <h3>Nenhum resultado encontrado</h3>
-                    <p>Não existem solicitações para os filtros informados.</p>
-                </div>
-            `;
+            lista.innerHTML = `<div class="card-vazia"><h3>Sem resultados</h3></div>`;
             return;
         }
 
         itens.forEach((item) => {
             const card = document.createElement("article");
             card.className = `card-solicitacao ${item.tipo}`;
-
-            const destino = item.tipo === "ocorrencia"
-                ? `./detalhe-ocorrencia.html?id=${item.id}`
-                : `./detalhe-sugestao.html?id=${item.id}`;
+            const destino = item.tipo === "ocorrencia" ? `./detalhe-ocorrencia.html?id=${item.id}` : `./detalhe-sugestao.html?id=${item.id}`;
 
             card.innerHTML = `
                 <div class="info-solicitacao">
-                    <div class="tipo">
-                        ${item.tipo === "ocorrencia" ? "Ocorrência" : "Sugestão"}
-                    </div>
-
+                    <div class="tipo">${item.tipo === "ocorrencia" ? "Ocorrência" : "Sugestão"}</div>
                     <h3>${item.titulo}</h3>
-
                     <p>${item.descricao}</p>
-
                     <div class="meta">
                         <span><strong>Autor:</strong> ${item.autor}</span>
-                        <span><strong>Matrícula:</strong> ${item.matricula}</span>
-                        <span><strong>Origem:</strong> ${item.setor_origem}</span>
-                        <span><strong>Responsável:</strong> ${item.setor_responsavel}</span>
                         <span><strong>Data:</strong> ${item.data}</span>
                         ${item.tipo === "ocorrencia" && item.prioridade ? `<span><strong>Prioridade:</strong> ${formatarPrioridade(item.prioridade)}</span>` : ""}
-                        <span class="status ${item.status}">
-                            ${formatarStatus(item.status)}
-                        </span>
+                        <span class="status ${item.status}">${formatarStatus(item.status)}</span>
                     </div>
                 </div>
-
                 <div class="acoes">
-                    <a href="${destino}" class="btn-detalhes">
-                        Ver detalhes
-                    </a>
+                    <a href="${destino}" class="btn-detalhes">Ver detalhes</a>
                 </div>
             `;
-
             lista.appendChild(card);
         });
     }
 
     function aplicarFiltroVisualInicial() {
-        filtros.forEach((btn) => btn.classList.remove("ativo"));
-
-        const botaoCorrespondente = [...filtros].find(
-            (btn) => btn.dataset.filtro === filtroAtual
-        );
-
-        if (botaoCorrespondente) {
-            botaoCorrespondente.classList.add("ativo");
-        } else {
-            const botaoTodas = [...filtros].find(
-                (btn) => btn.dataset.filtro === "todas"
-            );
-            if (botaoTodas) botaoTodas.classList.add("ativo");
-        }
+        filtros.forEach(btn => btn.classList.remove("ativo"));
+        const btnFiltro = [...filtros].find(btn => btn.dataset.filtro === filtroAtual) || [...filtros].find(btn => btn.dataset.filtro === "todas");
+        if(btnFiltro) btnFiltro.classList.add("ativo");
     }
 
-    filtros.forEach((botao) => {
+    filtros.forEach(botao => {
         botao.addEventListener("click", () => {
             filtros.forEach(btn => btn.classList.remove("ativo"));
             botao.classList.add("ativo");
@@ -259,9 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    inputBusca.addEventListener("input", renderizar);
+    if (inputBusca) inputBusca.addEventListener("input", renderizar);
 
-    atualizarResumo();
-    aplicarFiltroVisualInicial();
-    renderizar();
+    carregarDadosDoBanco();
 });

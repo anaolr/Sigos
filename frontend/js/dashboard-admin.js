@@ -102,13 +102,8 @@ function classeStatus(status) {
 }
 
 function renderizarSugestoesDestaqueAdmin() {
-  const lista = document.getElementById(
-    "lista-sugestoes-destaque-admin"
-  );
-
-  const resumo = document.getElementById(
-    "resumo-votacao-admin"
-  );
+  const lista = document.getElementById("lista-sugestoes-destaque-admin");
+  const resumo = document.getElementById("resumo-votacao-admin");
 
   if (!lista || !resumo) return;
 
@@ -134,9 +129,7 @@ function renderizarSugestoesDestaqueAdmin() {
 
       <p>${sugestao.descricao}</p>
 
-      <span class="tag status-sugestao-admin ${classeStatus(
-        sugestao.status
-      )}">
+      <span class="tag status-sugestao-admin ${classeStatus(sugestao.status)}">
         ${formatarStatus(sugestao.status)}
       </span>
     `;
@@ -192,11 +185,7 @@ function criarGrafico() {
             dados.ocorrencias.baixa
           ],
 
-          backgroundColor: [
-            "#f5b5b5",
-            "#fff1b8",
-            "#c8f0d2"
-          ],
+          backgroundColor: ["#f5b5b5", "#fff1b8", "#c8f0d2"],
 
           borderColor: "#ffffff",
           borderWidth: 2,
@@ -225,22 +214,41 @@ function criarGrafico() {
 }
 
 function iniciar() {
-  // NOVO CÓDIGO (Usar o Token):
-const token = localStorage.getItem("token");
-const role = localStorage.getItem("role");
-const nome = localStorage.getItem("nome");
+  // 1. Verificando as Credenciais
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+  const nome = localStorage.getItem("nome");
 
-// Se não tiver token, manda de volta para o login
-if (!token) {
+  // Se não tiver token, manda de volta para o login
+  if (!token) {
     window.location.href = "login.html";
-}
+    return; // Para a execução do código aqui
+  }
 
-// Colocar o nome real da pessoa no canto superior esquerdo
-const nomeSidebar = document.getElementById("nome-sidebar");
-if (nomeSidebar && nome) {
-    nomeSidebar.textContent = nome;
-}
+  // 2. Colocar o nome real da pessoa na tela
+  const nomeSidebar = document.getElementById("nome-sidebar");
+  const tituloBoasVindas = document.getElementById("boas-vindas-nome");
 
+  if (nome) {
+    if (nomeSidebar) nomeSidebar.textContent = nome;
+    if (tituloBoasVindas) tituloBoasVindas.textContent = `Olá, ${nome} 👋`;
+  }
+
+  // 3. Lógica do botão de LOGOUT
+  const btnSair = document.getElementById("btn-logout");
+  if (btnSair) {
+    btnSair.addEventListener("click", (event) => {
+      event.preventDefault(); // Impede o botão de fazer algo automático
+      
+      // Apaga todos os dados da sessão (O Crachá)
+      localStorage.clear(); 
+      
+      // Manda pro login
+      window.location.href = "./login.html";
+    });
+  }
+
+  // 4. Iniciar o restante da página
   atualizarDashboard();
   renderizarSugestoesDestaqueAdmin();
   criarGrafico();

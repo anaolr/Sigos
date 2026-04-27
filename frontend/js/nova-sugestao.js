@@ -1,5 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    const nome = localStorage.getItem("nome");
+
+    if (!token || role !== "funcionario") {
+        localStorage.clear();
+        window.location.href = "./login.html";
+        return;
+    }
+
     const nomeSidebar = document.getElementById("nome-sidebar");
+    if (nomeSidebar && nome) nomeSidebar.textContent = nome;
+
+    const btnSair = document.getElementById("btn-logout");
+    if (btnSair) {
+        btnSair.addEventListener("click", (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = "./login.html";
+        });
+    }
+
     const form = document.getElementById("form-sugestao");
     const mensagem = document.getElementById("mensagem-formulario");
     const btnCancelar = document.getElementById("btn-cancelar");
@@ -8,94 +29,78 @@ document.addEventListener("DOMContentLoaded", () => {
     const previewAnexo = document.getElementById("preview-anexo");
     const campoDataEnvio = document.getElementById("data-envio");
 
-    const usuarioString = localStorage.getItem("usuarioLogado");
-    if (!usuarioString) {
-        window.location.href = "./login.html";
-    }
-    const usuario = JSON.parse(usuarioString);
-
-    nomeSidebar.textContent = usuario.nome;
-
     function formatarDataAtual() {
         const agora = new Date();
-
         const dia = String(agora.getDate()).padStart(2, "0");
         const mes = String(agora.getMonth() + 1).padStart(2, "0");
         const ano = agora.getFullYear();
-
         const horas = String(agora.getHours()).padStart(2, "0");
         const minutos = String(agora.getMinutes()).padStart(2, "0");
-
         return `${dia}/${mes}/${ano} às ${horas}:${minutos}`;
     }
 
-    campoDataEnvio.value = formatarDataAtual();
+    if(campoDataEnvio) campoDataEnvio.value = formatarDataAtual();
 
-    inputAnexo.addEventListener("change", (event) => {
+    if(inputAnexo) inputAnexo.addEventListener("change", (event) => {
         const arquivo = event.target.files[0];
-
-        if (!arquivo) {
-            previewContainer.style.display = "none";
-            previewAnexo.src = "";
+        if (!arquivo || !arquivo.type.startsWith("image/")) {
+            if(previewContainer) previewContainer.style.display = "none";
             return;
         }
-
-        if (!arquivo.type.startsWith("image/")) {
-            mensagem.style.color = "#d62828";
-            mensagem.textContent = "Selecione apenas imagens.";
-            inputAnexo.value = "";
-            previewContainer.style.display = "none";
-            previewAnexo.src = "";
-            return;
-        }
-
         const reader = new FileReader();
-
         reader.onload = (e) => {
             previewAnexo.src = e.target.result;
             previewContainer.style.display = "block";
         };
-
         reader.readAsDataURL(arquivo);
     });
 
-    form.addEventListener("submit", (event) => {
+    if(form) form.addEventListener("submit", async (event) => {
         event.preventDefault();
+        mensagem.style.color = "blue";
+        mensagem.textContent = "A enviar...";
 
-        mensagem.style.color = "#d62828";
-        mensagem.textContent = "";
+        // Usamos FormData para suportar envio de ficheiros
+        const formData = new FormData();
+        formData.append("titulo", document.getElementById("titulo").value.trim());
+        formData.append("descricao", document.getElementById("descricao").value.trim());
+        formData.append("setor", document.getElementById("setor-destino").value); // Igual ao Model Sugestao
+        formData.append("beneficio", document.getElementById("beneficio").value.trim()); // Igual ao Model Sugestao
+        formData.append("status", "Enviada"); // A maiúscula exigida pelo Sequelize
 
-        const dados = {
-            titulo: document.getElementById("titulo").value.trim(),
-            setorDestino: document.getElementById("setor-destino").value,
-            beneficio: document.getElementById("beneficio").value.trim(),
-            dataEnvio: campoDataEnvio.value,
-            descricao: document.getElementById("descricao").value.trim(),
-            anexo: inputAnexo.files[0] ? inputAnexo.files[0].name : null
-        };
-
-        if (
-            !dados.titulo ||
-            !dados.setorDestino ||
-            !dados.beneficio ||
-            !dados.descricao
-        ) {
-            mensagem.textContent = "Preencha todos os campos obrigatórios.";
-            return;
+        // Adiciona a imagem se ela existir
+        if (inputAnexo && inputAnexo.files[0]) {
+            formData.append("anexo", inputAnexo.files[0]);
         }
 
-        console.log("Sugestão enviada:", dados);
+        try {
+            const response = await fetch("http://localhost:3000/api/sugestoes", {
+                method: "POST",
+                headers: {
+                    // Sem "Content-Type" quando se usa FormData!
+                    "Authorization": `Bearer ${token}`
+                },
+                body: formData // Envia o pacote completo
+            });
 
-        mensagem.style.color = "green";
-        mensagem.textContent = "Sugestão enviada com sucesso.";
-
-        form.reset();
-        campoDataEnvio.value = formatarDataAtual();
-        previewContainer.style.display = "none";
-        previewAnexo.src = "";
+            if(response.ok) {
+                mensagem.style.color = "green";
+                mensagem.textContent = "Sugestão enviada com sucesso!";
+                form.reset();
+                if(campoDataEnvio) campoDataEnvio.value = formatarDataAtual();
+                if(previewContainer) previewContainer.style.display = "none";
+            } else {
+                const erroServidor = await response.json();
+                throw new Error(erroServidor.erro || "Erro do servidor");
+            }
+        } catch(erro) {
+            mensagem.style.color = "#d62828";
+            mensagem.textContent = "Erro de conexão: " + erro.message;
+            console.error(erro);
+        }
     });
 
-    btnCancelar.addEventListener("click", () => {
+    if(btnCancelar) btnCancelar.addEventListener("click", () => {
         window.location.href = "./minhas-solicitacoes.html";
     });
 });

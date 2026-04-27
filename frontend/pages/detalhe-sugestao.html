@@ -30,11 +30,7 @@
 
             <nav id="ferramentas"></nav>
 
-            <button
-                id="btn-logout"
-                type="button"
-                onclick="window.location.href='../pages/login.html'"
-            >
+            <button id="btn-logout" type="button">
                 <i class="fa-solid fa-right-from-bracket"></i>
                 Logout
             </button>
@@ -79,6 +75,11 @@
                 <div class="info">
                     <h3>Votos recebidos</h3>
                     <input type="text" id="votos" readonly />
+                </div>
+
+                <div class="info">
+                    <h3>Anexo</h3>
+                    <img id="preview-anexo" src="" alt="Anexo da sugestão" style="display: none; max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 10px;" />
                 </div>
 
                 <div class="info" id="bloco-gestao">

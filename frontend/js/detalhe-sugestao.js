@@ -1,7 +1,28 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    const nome = localStorage.getItem("nome");
+
+    if (!token) {
+        localStorage.clear();
+        window.location.href = "./login.html";
+        return;
+    }
+
     const nomeSidebar = document.getElementById("nome-sidebar");
     const perfilSidebar = document.getElementById("perfil-sidebar");
     const ferramentas = document.getElementById("ferramentas");
+
+    if (nomeSidebar && nome) nomeSidebar.textContent = nome;
+
+    const btnSair = document.getElementById("btn-logout");
+    if (btnSair) {
+        btnSair.addEventListener("click", (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = "./login.html";
+        });
+    }
 
     const blocoGestao = document.getElementById("bloco-gestao");
     const blocoParecer = document.getElementById("bloco-parecer");
@@ -11,187 +32,165 @@ document.addEventListener("DOMContentLoaded", () => {
     const campos = {
         titulo: document.getElementById("titulo"),
         descricao: document.getElementById("descricao"),
-        setorOrigem: document.getElementById("setor_origem"),
-        beneficioEsperado: document.getElementById("beneficio_esperado"),
+        setor: document.getElementById("setor_origem"),
+        beneficio: document.getElementById("beneficio_esperado"),
         autor: document.getElementById("autor"),
         dataEnvio: document.getElementById("data_envio"),
         votos: document.getElementById("votos"),
         status: document.getElementById("status"),
         parecerGestor: document.getElementById("parecer_gestor"),
+        anexo: document.getElementById("preview-anexo"), // Agora ele vai encontrar isto no HTML!
         mensagem: document.getElementById("mensagem-sugestao"),
         form: document.getElementById("form-sugestao")
     };
 
-    const usuarioString = localStorage.getItem("usuarioLogado");
-
-    if (!usuarioString) {
-        window.location.href = "./login.html";
-        return;
-    }
-
-    const usuarioLogado = JSON.parse(usuarioString);
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
 
     function montarMenu(perfil) {
-        nomeSidebar.textContent = usuarioLogado.nome;
+        const perfisNomes = { "funcionario": "Funcionário", "gestor": "Gestor", "admin": "Administrador" };
+        if(perfilSidebar) perfilSidebar.textContent = perfisNomes[perfil] || "Usuário";
 
         if (perfil === "funcionario") {
-            perfilSidebar.textContent = "Funcionário";
             ferramentas.innerHTML = `
-                <div class="link-menu">
-                    <i class="fa-solid fa-house"></i>
-                    <a href="./dashboard-funcionario.html">Início</a>
-                </div>
-                <div class="link-menu">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <a href="./nova-ocorrencia.html">Nova ocorrência</a>
-                </div>
-                <div class="link-menu">
-                    <i class="fa-solid fa-lightbulb"></i>
-                    <a href="./nova-sugestao.html">Nova sugestão</a>
-                </div>
-                <div class="link-menu">
-                    <i class="fa-solid fa-folder-open"></i>
-                    <a href="./minhas-solicitacoes.html">Minhas solicitações</a>
-                </div>
-                <div class="link-menu">
-                    <i class="fa-solid fa-user"></i>
-                    <a href="./perfil-funcionario.html">Perfil</a>
-                </div>
+                <div class="link-menu"><i class="fa-solid fa-house"></i><a href="./dashboard-funcionario.html">Início</a></div>
+                <div class="link-menu"><i class="fa-solid fa-circle-exclamation"></i><a href="./nova-ocorrencia.html">Nova ocorrência</a></div>
+                <div class="link-menu"><i class="fa-solid fa-lightbulb"></i><a href="./nova-sugestao.html">Nova sugestão</a></div>
+                <div class="link-menu"><i class="fa-solid fa-folder-open"></i><a href="./minhas-solicitacoes.html">Minhas solicitações</a></div>
+                <div class="link-menu"><i class="fa-solid fa-comments"></i><a href="./mural-sugestoes.html">Mural de Sugestões</a></div>
+                <div class="link-menu"><i class="fa-solid fa-user"></i><a href="./perfil-funcionario.html">Perfil</a></div>
             `;
-        }
-
-        if (perfil === "gestor") {
-            perfilSidebar.textContent = "Gestor";
+        } else if (perfil === "gestor") {
             ferramentas.innerHTML = `
-                <div class="link-menu">
-                    <i class="fa-solid fa-user"></i>
-                    <a href="./perfil-gestor.html">Perfil</a>
-                </div>
-                <div class="link-menu">
-                    <i class="fa-solid fa-table-columns"></i>
-                    <a href="./painel-solicitacoes-gestor.html">Solicitações</a>
-                </div>
-                <div class="link-menu">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <a href="./dashboard-gestor.html">Dashboard</a>
-                </div>
-                <div class="link-menu">
-                    <i class="fa-solid fa-bell"></i>
-                    <a href="./notificacoes.html">Notificações</a>
-                </div>
+                <div class="link-menu"><i class="fa-solid fa-user"></i><a href="./perfil-gestor.html">Perfil</a></div>
+                <div class="link-menu"><i class="fa-solid fa-folder-open"></i><a href="./painel-solicitacoes-gestor.html">Solicitações</a></div>
+                <div class="link-menu"><i class="fa-solid fa-table-columns"></i><a href="./dashboard-gestor.html">Dashboard</a></div>
+                <div class="link-menu"><i class="fa-solid fa-bell"></i><a href="./notificacoes.html">Notificações</a></div>
             `;
-        }
-
-        if (perfil === "admin") {
-            perfilSidebar.textContent = "Administrador";
+        } else if (perfil === "admin") {
             ferramentas.innerHTML = `
-                <div class="link-menu">
-                    <i class="fa-solid fa-user"></i>
-                    <a href="./perfil-admin.html">Perfil</a>
-                </div>
-                <div class="link-menu">
-                    <i class="fa-solid fa-user-plus"></i>
-                    <a href="./cadastro-usuario.html">Cadastro</a>
-                </div>
-                <div class="link-menu">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <a href="./dashboard-admin.html">Dashboard</a>
-                </div>
-                <div class="link-menu">
-                    <i class="fa-solid fa-bell"></i>
-                    <a href="./notificacoes-admin.html">Notificações</a>
-                </div>
+                <div class="link-menu"><i class="fa-solid fa-user"></i><a href="./perfil-admin.html">Perfil</a></div>
+                <div class="link-menu"><i class="fa-solid fa-user-plus"></i><a href="./cadastro-usuario.html">Cadastro</a></div>
+                <div class="link-menu"><i class="fa-solid fa-chart-line"></i><a href="./dashboard-admin.html">Dashboard</a></div>
+                <div class="link-menu"><i class="fa-solid fa-bell"></i><a href="./notificacoes-admin.html">Notificações</a></div>
             `;
         }
     }
-
-    const sugestao = {
-        id: 9,
-        titulo: "Melhorar iluminação do corredor",
-        descricao: "Instalar mais pontos de luz no corredor lateral para aumentar a visibilidade e a segurança.",
-        setor_origem: "Administrativo",
-        beneficio_esperado: "Melhor visibilidade, mais conforto e mais segurança para circulação.",
-        autor: "Mariana Alves",
-        data_envio: "13/04/2026 às 10:40",
-        votos: 12,
-        status: "em_analise",
-        parecer_gestor: "Sugestão em avaliação junto à equipe de infraestrutura."
-    };
 
     function aplicarPermissoes(perfil) {
-        if (perfil === "gestor") {
-            campos.status.disabled = false;
-            campos.parecerGestor.disabled = false;
-
-            blocoGestao.style.display = "block";
-            blocoParecer.style.display = "block";
-            btnSalvar.style.display = "inline-block";
-            return;
+        if (perfil === "gestor" || perfil === "admin") {
+            if(campos.status) campos.status.disabled = false;
+            if(campos.parecerGestor) campos.parecerGestor.disabled = false;
+            if(blocoGestao) blocoGestao.style.display = "block";
+            if(blocoParecer) blocoParecer.style.display = "block";
+            if(btnSalvar) btnSalvar.style.display = "inline-block";
+        } else {
+            if(campos.status) campos.status.disabled = true;
+            if(campos.parecerGestor) campos.parecerGestor.disabled = true;
+            if(blocoGestao) blocoGestao.style.display = "none";
+            if(blocoParecer) blocoParecer.style.display = "none";
+            if(btnSalvar) btnSalvar.style.display = "none";
         }
-
-        campos.status.disabled = true;
-        campos.parecerGestor.disabled = true;
-
-        blocoGestao.style.display = "none";
-        blocoParecer.style.display = "none";
-        btnSalvar.style.display = "none";
     }
 
-    function preencherTela() {
-        nomeSidebar.textContent = usuarioLogado.nome;
-
-        campos.titulo.value = sugestao.titulo;
-        campos.descricao.value = sugestao.descricao;
-        campos.setorOrigem.value = sugestao.setor_origem;
-        campos.beneficioEsperado.value = sugestao.beneficio_esperado;
-        campos.autor.value = sugestao.autor;
-        campos.dataEnvio.value = sugestao.data_envio;
-        campos.votos.value = `${sugestao.votos} voto(s)`;
-        campos.status.value = sugestao.status;
-        campos.parecerGestor.value = sugestao.parecer_gestor;
+    function formatarSetor(setor) {
+        if (!setor || setor === "N/A") return "N/A";
+        const s = String(setor).toLowerCase();
+        if (s === "ti") return "TI";
+        if (s === "rh") return "RH";
+        if (s === "manutencao") return "Manutenção";
+        if (s === "limpeza") return "Limpeza";
+        if (s === "administrativo") return "Administrativo";
+        if (s === "seguranca" || s === "segurança") return "Segurança";
+        return setor.charAt(0).toUpperCase() + setor.slice(1);
     }
 
-    function validarFormulario() {
-        if (!campos.status.value) {
-            campos.mensagem.textContent = "Selecione um status.";
-            campos.mensagem.style.color = "#d62828";
-            return false;
+    async function carregarSugestaoReal() {
+        try {
+            const response = await fetch(`http://localhost:3000/api/sugestoes/${id}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                const erroData = await response.json();
+                throw new Error(erroData.erro || "Erro ao buscar dados");
+            }
+
+            const sug = await response.json();
+
+            if(campos.titulo) campos.titulo.value = sug.titulo || "";
+            if(campos.descricao) campos.descricao.value = sug.descricao || "";
+            if(campos.setor) campos.setor.value = formatarSetor(sug.setor);
+            if(campos.beneficio) campos.beneficio.value = sug.beneficio || "";
+            if(campos.autor) campos.autor.value = sug.User ? sug.User.nome : "Anónimo";
+            if(campos.dataEnvio) campos.dataEnvio.value = new Date(sug.createdAt).toLocaleString('pt-BR');
+            if(campos.status) campos.status.value = sug.status || "Enviada";
+            if(campos.votos) campos.votos.value = `${sug.votos || 0} voto(s)`;
+            if(campos.parecerGestor) campos.parecerGestor.value = sug.parecer || "";
+
+            // Lógica do Anexo PROTEGIDA
+            if (campos.anexo) {
+                if (sug.anexo) {
+                    campos.anexo.src = sug.anexo.startsWith('http') ? sug.anexo : `http://localhost:3000/uploads/${sug.anexo}`;
+                    campos.anexo.style.display = "block";
+                } else {
+                    campos.anexo.style.display = "none";
+                }
+            }
+
+        } catch (e) {
+            console.error("Erro ao carregar detalhes:", e);
+            if(campos.mensagem) {
+                campos.mensagem.style.color = "red";
+                campos.mensagem.textContent = "Erro ao carregar detalhes reais: " + e.message;
+            }
         }
-
-        return true;
     }
 
-    campos.form.addEventListener("submit", async (event) => {
+    if(campos.form) campos.form.addEventListener("submit", async (event) => {
         event.preventDefault();
+        if(campos.mensagem) {
+            campos.mensagem.textContent = "Salvando...";
+            campos.mensagem.style.color = "blue";
+        }
 
-        campos.mensagem.textContent = "";
-
-        if (usuarioLogado.perfil !== "gestor") return;
-        if (!validarFormulario()) return;
+        if (role === "funcionario") return;
 
         const payload = {
-            id: sugestao.id,
             status: campos.status.value,
-            parecer_gestor: campos.parecerGestor.value.trim()
+            parecer: campos.parecerGestor.value.trim()
         };
 
         try {
-            console.log("Enviando para backend:", payload);
+            const response = await fetch(`http://localhost:3000/api/sugestoes/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
 
-            campos.mensagem.style.color = "green";
-            campos.mensagem.textContent = "Alterações salvas com sucesso.";
+            if (response.ok) {
+                if(campos.mensagem) {
+                    campos.mensagem.style.color = "green";
+                    campos.mensagem.textContent = "✅ Sugestão atualizada com sucesso!";
+                }
+            } else {
+                throw new Error("Erro ao salvar");
+            }
         } catch (erro) {
-            campos.mensagem.style.color = "#d62828";
-            campos.mensagem.textContent = "Erro ao salvar alterações.";
             console.error(erro);
+            if(campos.mensagem) {
+                campos.mensagem.style.color = "red";
+                campos.mensagem.textContent = "❌ Erro ao salvar alterações no servidor.";
+            }
         }
     });
 
-    btnPdf?.addEventListener("click", () => {
-        window.print();
-    });
+    if (btnPdf) btnPdf.addEventListener("click", () => window.print());
 
-    montarMenu(usuarioLogado.perfil);
-    preencherTela();
-    aplicarPermissoes(usuarioLogado.perfil);
+    montarMenu(role);
+    aplicarPermissoes(role);
+    if (id) carregarSugestaoReal();
 });

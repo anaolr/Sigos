@@ -1,19 +1,42 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const nomeSidebar = document.getElementById("nome-sidebar");
-    const listaSugestoesSetor = document.getElementById("lista-sugestoes-setor");
-
-    // --- CORREÇÃO DO SISTEMA DE LOGIN ---
+    // ==========================================
+    // 1. SEGURANÇA E PERSONALIZAÇÃO
+    // ==========================================
     const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
     const nome = localStorage.getItem("nome");
 
-    if (!token) {
-        window.location.href = "login.html";
-        return;
+    // Verifica se tem token E se o usuário é realmente um gestor
+    if (!token || role !== "gestor") {
+        localStorage.clear(); // Limpa tudo para evitar bumerangue
+        window.location.href = "./login.html";
+        return; // Impede que o resto do código rode
     }
 
-    if (nomeSidebar) nomeSidebar.textContent = nome;
-    // --------------------------------------
+    // Atualiza o nome na tela
+    const nomeSidebar = document.getElementById("nome-sidebar");
+    const tituloBoasVindas = document.getElementById("boas-vindas-nome");
 
+    if (nome) {
+        if (nomeSidebar) nomeSidebar.textContent = nome;
+        if (tituloBoasVindas) tituloBoasVindas.textContent = `Olá, ${nome} 👋`;
+    }
+
+    // ==========================================
+    // 2. LÓGICA DE LOGOUT
+    // ==========================================
+    const btnSair = document.getElementById("btn-logout");
+    if (btnSair) {
+        btnSair.addEventListener("click", (event) => {
+            event.preventDefault(); // Evita recarregar a página sem querer
+            localStorage.clear(); // Apaga as credenciais
+            window.location.href = "./login.html"; // Redireciona
+        });
+    }
+
+    // ==========================================
+    // 3. INTERAÇÕES DOS CARDS (Filtros)
+    // ==========================================
     const cards = document.querySelectorAll(".card-resumo[data-filtro]");
     cards.forEach(card => {
         card.addEventListener("click", () => {
@@ -21,6 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = `./painel-solicitacoes-gestor.html?prioridade=${filtro}`;
         });
     });
+
+    // ==========================================
+    // 4. RENDERIZAÇÃO DE DADOS (Mock)
+    // ==========================================
+    const listaSugestoesSetor = document.getElementById("lista-sugestoes-setor");
 
     const sugestoesSetorMock = [
         { id: 1, titulo: "Melhorar rede Wi-Fi", setorOrigem: "Administrativo", votos: 23, status: "em_analise" },
@@ -41,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderizarSugestoes() {
         if (!listaSugestoesSetor) return;
         listaSugestoesSetor.innerHTML = "";
+        
         sugestoesSetorMock.forEach((sugestao) => {
             const div = document.createElement("div");
             div.classList.add("sugestao");
