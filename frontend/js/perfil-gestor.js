@@ -1,7 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // ==========================================
-    // 1. PORTEIRO DE SEGURANÇA E LOGOUT
-    // ==========================================
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
     const nome = localStorage.getItem("nome");
@@ -24,9 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
-    // 2. LÓGICA DA PÁGINA
-    // ==========================================
     const form = document.getElementById("form-perfil-gestor");
     const btnCancelar = document.getElementById("btn-cancelar");
     const btnAlterarFoto = document.getElementById("btn-alterar-foto");
@@ -46,31 +40,37 @@ document.addEventListener("DOMContentLoaded", () => {
       confirmarSenha: document.getElementById("confirmar-senha"),
     };
 
-    // Criamos um gestor mock básico para não quebrar a tela enquanto não liga ao back-end
-    const gestorMock = {
-        nome: nome,
-        matricula: "0000", // Aqui no futuro virá do fetch ao backend
-        email: "gestor@email.com",
-        tipo_usuario: "Gestor",
-        cargo: "Gestão",
-        setor: "TI"
-    };
-
     let dadosOriginais = {};
     let fotoOriginal = "";
+
+    async function carregarPerfil() {
+        try {
+            const response = await fetch("http://localhost:3000/api/auth/me", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const dadosUsuarioBanco = await response.json();
+                preencherFormulario(dadosUsuarioBanco);
+                salvarEstadoOriginal(dadosUsuarioBanco);
+            }
+        } catch (erro) {
+            console.error("Erro de conexão ao buscar perfil:", erro);
+        }
+    }
 
     function preencherFormulario(dados) {
       if(campos.nome) campos.nome.value = dados.nome || "";
       if(campos.matricula) campos.matricula.value = dados.matricula || "";
       if(campos.email) campos.email.value = dados.email || "";
-      if(campos.tipoUsuario) campos.tipoUsuario.value = dados.tipo_usuario || "";
-      if(campos.cargo) campos.cargo.value = dados.cargo || "";
-      if(campos.setor) campos.setor.value = dados.setor || "";
+      if(campos.tipoUsuario) campos.tipoUsuario.value = "Gestor";
+      if(campos.cargo) campos.cargo.value = dados.cargo || "N/A";
+      if(campos.setor) campos.setor.value = dados.setor || "N/A";
       if(campos.senha) campos.senha.value = "";
       if(campos.confirmarSenha) campos.confirmarSenha.value = "";
 
       if (dados.foto) {
-        previewFoto.src = dados.foto;
+        previewFoto.src = `http://localhost:3000/uploads/${dados.foto}`;
         previewFoto.style.display = "block";
         iconeFoto.style.display = "none";
       } else {
@@ -92,9 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
       campos.confirmarSenha.value = "";
       nomeSidebar.textContent = dadosOriginais.nome || "Nome do usuário";
       mensagem.textContent = "";
+      inputFoto.value = "";
 
       if (fotoOriginal) {
-        previewFoto.src = fotoOriginal;
+        previewFoto.src = `http://localhost:3000/uploads/${fotoOriginal}`;
         previewFoto.style.display = "block";
         iconeFoto.style.display = "none";
       } else {
@@ -102,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
         previewFoto.style.display = "none";
         iconeFoto.style.display = "block";
       }
-      inputFoto.value = "";
     }
 
     function validarFormulario() {
@@ -120,55 +120,66 @@ document.addEventListener("DOMContentLoaded", () => {
       return true;
     }
 
-    async function salvarAlteracoes(event) {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      mensagem.textContent = "";
-      if (!validarFormulario()) return;
+      mensagem.textContent = "Salvando...";
+      mensagem.style.color = "blue";
 
-      mensagem.style.color = "green";
-      mensagem.textContent = "Alterações salvas com sucesso.";
-      dadosOriginais.nome = campos.nome.value.trim();
-      dadosOriginais.email = campos.email.value.trim();
-      nomeSidebar.textContent = dadosOriginais.nome;
+      if (!validarFormulario()) {
+          mensagem.style.color = "#d62828";
+          return;
+      }
+
+      const formData = new FormData();
+      formData.append("nome", campos.nome.value.trim());
+      formData.append("email", campos.email.value.trim());
       
-      // Atualiza também no localStorage para manter a coerência visual
-      localStorage.setItem("nome", dadosOriginais.nome);
-
-      if (previewFoto.src && previewFoto.style.display === "block") {
-        fotoOriginal = previewFoto.src;
+      if (campos.senha.value.trim() !== "") {
+          formData.append("senha", campos.senha.value.trim());
       }
-      campos.senha.value = "";
-      campos.confirmarSenha.value = "";
-      inputFoto.value = "";
-    }
+      if (inputFoto.files[0]) {
+          formData.append("foto", inputFoto.files[0]);
+      }
 
-    btnAlterarFoto.addEventListener("click", () => inputFoto.click());
+      try {
+          const response = await fetch("http://localhost:3000/api/auth/me", {
+              method: "PUT",
+              headers: { "Authorization": `Bearer ${token}` },
+              body: formData
+          });
 
-    inputFoto.addEventListener("change", (event) => {
+          if (response.ok) {
+              const dadosSalvos = await response.json();
+              mensagem.style.color = "green";
+              mensagem.textContent = "Alterações salvas com sucesso!";
+              nomeSidebar.textContent = dadosSalvos.nome;
+              localStorage.setItem("nome", dadosSalvos.nome);
+              campos.senha.value = "";
+              campos.confirmarSenha.value = "";
+          } else {
+              throw new Error("Erro ao salvar");
+          }
+      } catch (e) {
+          mensagem.style.color = "#d62828";
+          mensagem.textContent = "Erro ao comunicar com o servidor.";
+      }
+    });
+
+    if(btnAlterarFoto) btnAlterarFoto.addEventListener("click", () => inputFoto.click());
+
+    if(inputFoto) inputFoto.addEventListener("change", (event) => {
       const arquivo = event.target.files[0];
-      if (!arquivo) return;
-      if (!arquivo.type.startsWith("image/")) {
-        mensagem.style.color = "#d62828";
-        mensagem.textContent = "Selecione um arquivo de imagem válido.";
-        inputFoto.value = ""; return;
-      }
+      if (!arquivo || !arquivo.type.startsWith("image/")) return;
       const leitor = new FileReader();
       leitor.onload = function (e) {
         previewFoto.src = e.target.result;
         previewFoto.style.display = "block";
         iconeFoto.style.display = "none";
-        mensagem.textContent = "";
       };
       leitor.readAsDataURL(arquivo);
     });
 
-    campos.nome.addEventListener("input", () => {
-      nomeSidebar.textContent = campos.nome.value.trim() || "Nome do usuário";
-    });
+    if(btnCancelar) btnCancelar.addEventListener("click", restaurarFormulario);
 
-    btnCancelar.addEventListener("click", restaurarFormulario);
-    form.addEventListener("submit", salvarAlteracoes);
-
-    preencherFormulario(gestorMock);
-    salvarEstadoOriginal(gestorMock);
+    carregarPerfil();
 });

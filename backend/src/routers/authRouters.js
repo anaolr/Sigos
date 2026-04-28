@@ -7,7 +7,8 @@ import {
   forgotPassword, 
   resetPassword, 
   getProfile,
-  updateProfile
+  updateProfile,
+  listarUsuarios
 } from "../controllers/authController.js";
 
 // Middleware para verificar o Token JWT
@@ -50,4 +51,6 @@ router.get("/me", verificarToken, getProfile);
 // Rota para atualizar os dados e guardar a foto
 router.put("/me", verificarToken, upload.single("foto"), updateProfile);
 
+// Rota para listar utilizadores
+router.get("/users", verificarToken, listarUsuarios);
 export default router;

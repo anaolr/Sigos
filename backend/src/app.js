@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import authRoutes from "./routers/authRouters.js";
 import ocorrenciaRoutes from "./routers/ocorrenciaRoutes.js";
 import sugestaoRoutes from "./routers/sugestaoRouters.js";
-
+import notificacaoRoutes from "./routers/notificacaoRoutes.js";
 // Configuração necessária para ler ficheiros em projetos do tipo "module"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,9 +19,11 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Rotas
+
 app.use("/api/auth", authRoutes);
 app.use("/api/ocorrencias", ocorrenciaRoutes);
 app.use("/api/sugestoes", sugestaoRoutes);
+app.use("/api/notificacoes", notificacaoRoutes);
 
 app.use((err, req, res, next) => {
     console.error("❌ Erro capturado pelo middleware:", err.stack);

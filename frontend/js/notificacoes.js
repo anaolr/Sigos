@@ -1,7 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // ==========================================
-    // 1. PORTEIRO DE SEGURANÇA E LOGOUT
-    // ==========================================
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
     const nome = localStorage.getItem("nome");
@@ -24,36 +21,82 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
-    // 2. LÓGICA DA PÁGINA
-    // ==========================================
     const btnMarcarLidas = document.getElementById("btn-marcar-lidas");
-    const cardsNaoLidos = document.querySelectorAll(".card-notificacao.nao-lida");
     const resumoNaoLidas = document.getElementById("resumo-nao-lidas");
+    const listaNotificacoes = document.getElementById("lista-notificacoes");
 
-    // Atualiza contagem inicial
-    let qtdNaoLidas = cardsNaoLidos.length;
-    
-    function atualizarTextoResumo() {
-        if (!resumoNaoLidas) return;
-        
-        if (qtdNaoLidas === 0) {
-            resumoNaoLidas.textContent = "Não tem novas notificações";
-        } else {
-            resumoNaoLidas.textContent = `Tem ${qtdNaoLidas} notificação(ões) não lida(s)`;
+    async function carregarNotificacoes() {
+        try {
+            const response = await fetch("http://localhost:3000/api/notificacoes", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error("Erro ao carregar notificações.");
+            
+            const notificacoes = await response.json();
+            
+            if (listaNotificacoes) listaNotificacoes.innerHTML = "";
+            let naoLidas = 0;
+
+            if (notificacoes.length === 0) {
+                if(listaNotificacoes) listaNotificacoes.innerHTML = "<p style='color: var(--text-color); margin-top: 20px;'>Você não possui notificações.</p>";
+            } else {
+                notificacoes.forEach(notif => {
+                    if (!notif.lida) naoLidas++;
+
+                    const icone = notif.tipo === "ocorrencia" ? "fa-triangle-exclamation" : (notif.tipo === "sugestao" ? "fa-lightbulb" : "fa-bell");
+                    const link = notif.tipo === "ocorrencia" ? `./detalhe-ocorrencia.html?id=${notif.linkId}` : `./detalhe-sugestao.html?id=${notif.linkId}`;
+                    const statusClass = notif.lida ? "lida" : "nao-lida";
+
+                    const html = `
+                        <article class="card-notificacao ${statusClass} ${notif.tipo}">
+                            <div class="icone-notificacao">
+                                <i class="fa-solid ${icone}"></i>
+                            </div>
+                            <div class="conteudo-notificacao">
+                                <div class="linha-topo">
+                                    <span class="tipo">${notif.titulo}</span>
+                                    <span class="data">${new Date(notif.createdAt).toLocaleString('pt-BR')}</span>
+                                </div>
+                                <p>${notif.mensagem}</p>
+                                ${notif.linkId ? `<a href="${link}" class="btn-detalhes">Ver detalhes</a>` : ''}
+                            </div>
+                        </article>
+                    `;
+                    listaNotificacoes.insertAdjacentHTML('beforeend', html);
+                });
+            }
+
+            atualizarTextoResumo(naoLidas);
+
+        } catch (error) {
+            console.error("Erro:", error);
+            if(listaNotificacoes) listaNotificacoes.innerHTML = "<p style='color: red; margin-top: 20px;'>Erro ao carregar o feed de notificações.</p>";
         }
     }
-    atualizarTextoResumo();
 
-    // Botão de marcar como lidas (apenas efeito visual por enquanto)
+    function atualizarTextoResumo(qtd) {
+        if (!resumoNaoLidas) return;
+        if (qtd === 0) {
+            resumoNaoLidas.textContent = "Não tem novas notificações";
+        } else {
+            resumoNaoLidas.textContent = `Você tem ${qtd} notificação(ões) não lida(s)`;
+        }
+    }
+
     if (btnMarcarLidas) {
-        btnMarcarLidas.addEventListener("click", () => {
-            cardsNaoLidos.forEach(card => {
-                card.classList.remove("nao-lida");
-                card.classList.add("lida");
-            });
-            qtdNaoLidas = 0;
-            atualizarTextoResumo();
+        btnMarcarLidas.addEventListener("click", async () => {
+            try {
+                await fetch("http://localhost:3000/api/notificacoes/lidas", {
+                    method: "PUT",
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                carregarNotificacoes(); // Recarrega para pintar todas de cinza
+            } catch (e) {
+                console.error("Erro ao marcar como lidas:", e);
+            }
         });
     }
+
+    carregarNotificacoes();
 });

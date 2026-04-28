@@ -84,3 +84,18 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Erro ao atualizar", error: error.message });
   }
 };
+
+// ======================================
+// LISTAR TODOS OS USUÁRIOS
+// ======================================
+export const listarUsuarios = async (req, res) => {
+  try {
+    // Busca id, nome, role, setor e cargo de todos
+    const usuarios = await User.findAll({
+      attributes: ['id', 'nome', 'role', 'setor', 'cargo']
+    });
+    res.json(usuarios);
+  } catch (error) {
+    res.status(500).json({ message: "Erro ao buscar usuários", error: error.message });
+  }
+};

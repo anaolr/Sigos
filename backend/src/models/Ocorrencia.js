@@ -9,7 +9,8 @@ const Ocorrencia = sequelize.define("Ocorrencia", {
   setorResponsavel: DataTypes.STRING, // NOVO: Para guardar o setor escolhido
   local: DataTypes.STRING,
   urgencia: DataTypes.STRING,
-  anexo: DataTypes.STRING,            // NOVO: Para guardar o nome da imagem
+  anexo: DataTypes.STRING,
+  responsavel: DataTypes.STRING,            // NOVO: Para guardar o nome da imagem
   status: {
     type: DataTypes.ENUM("Aberta", "Em análise", "Em andamento", "Concluída"),
     defaultValue: "Aberta"

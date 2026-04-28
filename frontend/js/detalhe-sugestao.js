@@ -39,13 +39,28 @@ document.addEventListener("DOMContentLoaded", () => {
         votos: document.getElementById("votos"),
         status: document.getElementById("status"),
         parecerGestor: document.getElementById("parecer_gestor"),
-        anexo: document.getElementById("preview-anexo"), // Agora ele vai encontrar isto no HTML!
+        anexo: document.getElementById("preview-anexo"),
         mensagem: document.getElementById("mensagem-sugestao"),
         form: document.getElementById("form-sugestao")
     };
 
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
+
+    // DICIONÁRIO DE TRADUÇÃO DE STATUS (Banco <-> HTML)
+    const statusParaHTML = {
+        "Enviada": "enviada",
+        "Em análise": "em_analise",
+        "Aprovada": "aprovada",
+        "Rejeitada": "rejeitada"
+    };
+
+    const statusParaBanco = {
+        "enviada": "Enviada",
+        "em_analise": "Em análise",
+        "aprovada": "Aprovada",
+        "rejeitada": "Rejeitada"
+    };
 
     function montarMenu(perfil) {
         const perfisNomes = { "funcionario": "Funcionário", "gestor": "Gestor", "admin": "Administrador" };
@@ -66,13 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="link-menu"><i class="fa-solid fa-folder-open"></i><a href="./painel-solicitacoes-gestor.html">Solicitações</a></div>
                 <div class="link-menu"><i class="fa-solid fa-table-columns"></i><a href="./dashboard-gestor.html">Dashboard</a></div>
                 <div class="link-menu"><i class="fa-solid fa-bell"></i><a href="./notificacoes.html">Notificações</a></div>
-            `;
-        } else if (perfil === "admin") {
-            ferramentas.innerHTML = `
-                <div class="link-menu"><i class="fa-solid fa-user"></i><a href="./perfil-admin.html">Perfil</a></div>
-                <div class="link-menu"><i class="fa-solid fa-user-plus"></i><a href="./cadastro-usuario.html">Cadastro</a></div>
-                <div class="link-menu"><i class="fa-solid fa-chart-line"></i><a href="./dashboard-admin.html">Dashboard</a></div>
-                <div class="link-menu"><i class="fa-solid fa-bell"></i><a href="./notificacoes-admin.html">Notificações</a></div>
             `;
         }
     }
@@ -111,11 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: { "Authorization": `Bearer ${token}` }
             });
 
-            if (!response.ok) {
-                const erroData = await response.json();
-                throw new Error(erroData.erro || "Erro ao buscar dados");
-            }
-
+            if (!response.ok) throw new Error("Erro ao buscar dados");
             const sug = await response.json();
 
             if(campos.titulo) campos.titulo.value = sug.titulo || "";
@@ -124,11 +128,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if(campos.beneficio) campos.beneficio.value = sug.beneficio || "";
             if(campos.autor) campos.autor.value = sug.User ? sug.User.nome : "Anónimo";
             if(campos.dataEnvio) campos.dataEnvio.value = new Date(sug.createdAt).toLocaleString('pt-BR');
-            if(campos.status) campos.status.value = sug.status || "Enviada";
             if(campos.votos) campos.votos.value = `${sug.votos || 0} voto(s)`;
             if(campos.parecerGestor) campos.parecerGestor.value = sug.parecer || "";
 
-            // Lógica do Anexo PROTEGIDA
+            // Traduz o status do Banco para selecionar a opção certa no HTML
+            if(campos.status) {
+                campos.status.value = statusParaHTML[sug.status] || "enviada";
+            }
+
             if (campos.anexo) {
                 if (sug.anexo) {
                     campos.anexo.src = sug.anexo.startsWith('http') ? sug.anexo : `http://localhost:3000/uploads/${sug.anexo}`;
@@ -137,7 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     campos.anexo.style.display = "none";
                 }
             }
-
         } catch (e) {
             console.error("Erro ao carregar detalhes:", e);
             if(campos.mensagem) {
@@ -156,8 +162,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (role === "funcionario") return;
 
+        // Traduz o status do HTML de volta para o formato que o Banco aceita
         const payload = {
-            status: campos.status.value,
+            status: statusParaBanco[campos.status.value], 
             parecer: campos.parecerGestor.value.trim()
         };
 
