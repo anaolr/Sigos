@@ -121,7 +121,6 @@ export const solicitarRecuperacao = async (req, res) => {
         
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            // Por segurança, não indicamos se o e-mail existe ou não
             return res.status(200).json({ mensagem: "Se o e-mail existir, receberá um link de recuperação." });
         }
 
@@ -134,29 +133,36 @@ export const solicitarRecuperacao = async (req, res) => {
             { where: { id: user.id } }
         );
 
+        // CONFIGURAÇÃO AJUSTADA PARA O RAILWAY (Porta 465)
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true, // Porta 465 exige secure: true
             auth: {
-                user: 'ana.freitas0046@gmail.com', // O seu e-mail
+                user: 'ana.freitas0046@gmail.com', 
                 pass: 'zamt asgu wlln jeti'   
+            },
+            tls: {
+                rejectUnauthorized: false // Evita bloqueios de segurança do servidor
             }
         });
 
-        // CORREÇÃO: O ficheiro no frontend chama-se redefinir-senha.html
-        // Localize esta linha e ajuste-a assim:
-const linkRecuperacao = `http://127.0.0.1:5500/frontend/pages/redefinir-senha.html?token=${token}`;
+        // CORREÇÃO DO LINK: Agora ele usa o link da VERCEL onde está o seu site
+       const linkRecuperacao = `https://sigos-wheat.vercel.app/pages/redefinir-senha.html?token=${token}`;
 
         await transporter.sendMail({
             from: '"Sistema SIGOS" <ana.freitas0046@gmail.com>',
             to: email,
             subject: 'Recuperação de Senha - SIGOS',
             html: `
-                <h2>Recuperação de Senha</h2>
-                <p>Olá, ${user.nome}!</p>
-                <p>Você solicitou a alteração da sua senha no SIGOS.</p>
-                <p>Clique no link abaixo para criar uma nova senha (este link expira em 1 hora):</p>
-                <a href="${linkRecuperacao}" style="display:inline-block; padding:10px 20px; background:blue; color:white; text-decoration:none; border-radius:5px;">Redefinir Senha</a>
-                <p>Se você não solicitou isso, apenas ignore este e-mail.</p>
+                <div style="font-family: Arial, sans-serif; color: #333;">
+                    <h2>Recuperação de Senha</h2>
+                    <p>Olá, <strong>${user.nome}</strong>!</p>
+                    <p>Você solicitou a alteração da sua senha no SIGOS.</p>
+                    <p>Clique no botão abaixo para criar uma nova senha (este link expira em 1 hora):</p>
+                    <a href="${linkRecuperacao}" style="display:inline-block; padding:12px 25px; background-color:#007bff; color:white; text-decoration:none; border-radius:5px; font-weight:bold;">Redefinir Minha Senha</a>
+                    <p style="margin-top:20px; font-size: 12px; color: #777;">Se você não solicitou isso, ignore este e-mail.</p>
+                </div>
             `
         });
 
