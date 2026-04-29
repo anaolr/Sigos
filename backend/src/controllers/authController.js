@@ -135,17 +135,22 @@ export const solicitarRecuperacao = async (req, res) => {
 
         // CONFIGURAÇÃO AJUSTADA PARA O RAILWAY (Porta 465)
         const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true, // Porta 465 exige secure: true
-            auth: {
-                user: 'ana.freitas0046@gmail.com', 
-                pass: 'zamt asgu wlln jeti'   
-            },
-            tls: {
-                rejectUnauthorized: false // Evita bloqueios de segurança do servidor
-            }
-        });
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, 
+    auth: {
+        user: 'ana.freitas0046@gmail.com',
+        pass: 'zamt asgu wlln jeti'
+    },
+    // CONFIGURAÇÕES DE TIMEOUT (Para evitar o ETIMEDOUT)
+    connectionTimeout: 20000, // 20 segundos
+    greetingTimeout: 20000,
+    socketTimeout: 20000,
+    tls: {
+        rejectUnauthorized: false,
+        minVersion: "TLSv1.2" // Força uma versão estável do protocolo
+    }
+});
 
         // CORREÇÃO DO LINK: Agora ele usa o link da VERCEL onde está o seu site
        const linkRecuperacao = `https://sigos-wheat.vercel.app/pages/redefinir-senha.html?token=${token}`;
