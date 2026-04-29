@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 1. SEGURANÇA E LOGOUT
@@ -65,8 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             // Puxa tudo do banco (como admin, ele precisa ver a empresa inteira)
             const [resOco, resSug] = await Promise.all([
-                fetch("http://localhost:3000/api/ocorrencias/todas", { headers: { "Authorization": `Bearer ${token}` } }),
-                fetch("http://localhost:3000/api/sugestoes/todas", { headers: { "Authorization": `Bearer ${token}` } })
+                fetch(`${API_URL}/api/ocorrencias/todas`, { headers: { "Authorization": `Bearer ${token}` } }),
+                fetch(`${API_URL}/api/sugestoes/todas`, { headers: { "Authorization": `Bearer ${token}` } })
             ]);
 
             const ocorrencias = resOco.ok ? await resOco.json() : [];

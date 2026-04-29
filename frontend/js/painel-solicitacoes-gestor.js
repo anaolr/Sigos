@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -72,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function carregarDadosDoBanco() {
         try {
-            const resPerfil = await fetch("http://localhost:3000/api/auth/me", {
+            const resPerfil = await fetch(`${API_URL}/api/auth/me`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (!resPerfil.ok) throw new Error("Falha ao buscar perfil.");
@@ -81,10 +85,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const setorGestor = gestor.setor || "";
 
             const [respostaOcorrencias, respostaSugestoes] = await Promise.all([
-                fetch("http://localhost:3000/api/ocorrencias/todas", {
+                fetch(`${API_URL}/api/ocorrencias/todas`, {
                     headers: { "Authorization": `Bearer ${token}` }
                 }),
-                fetch("http://localhost:3000/api/sugestoes/todas", {
+                fetch(`${API_URL}/api/sugestoes/todas`, {
                     headers: { "Authorization": `Bearer ${token}` }
                 })
             ]);

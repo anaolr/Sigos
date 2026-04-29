@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 1. SEGURANÇA E LOGOUT
@@ -121,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 // Chama a rota de Registo (que já estava pronta no seu Backend)
-                const response = await fetch("http://localhost:3000/api/auth/register", {
+                const response = await fetch(`${API_URL}/api/auth/register`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

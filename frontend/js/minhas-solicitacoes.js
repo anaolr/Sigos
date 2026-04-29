@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -33,8 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const headers = { "Authorization": `Bearer ${token}` };
 
             const [resOco, resSug] = await Promise.all([
-                fetch("http://localhost:3000/api/ocorrencias/minhas", { headers }),
-                fetch("http://localhost:3000/api/sugestoes/minhas", { headers })
+                fetch(`${API_URL}/api/ocorrencias/minhas`, { headers }),
+                fetch(`${API_URL}/api/sugestoes/minhas`, { headers })
             ]);
 
             const ocorrenciasDB = resOco.ok ? await resOco.json() : [];

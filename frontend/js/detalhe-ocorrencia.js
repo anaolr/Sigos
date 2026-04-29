@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -110,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             try {
-                const response = await fetch(`http://localhost:3000/api/ocorrencias/${id}`, {
+                const response = await fetch(`${API_URL}/api/ocorrencias/${id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -221,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!campos.responsavelOcorrencia) return;
 
         try {
-            const response = await fetch("http://localhost:3000/api/auth/users", {
+            const response = await fetch(`${API_URL}/api/auth/users`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
 
@@ -252,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     async function carregarDadosReais() {
         try {
-            const response = await fetch(`http://localhost:3000/api/ocorrencias/${id}`, {
+            const response = await fetch(`${API_URL}/api/ocorrencias/${id}`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
 
@@ -286,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (campos.anexo) {
                 if (oco.anexo) {
-                    campos.anexo.src = oco.anexo.startsWith('http') ? oco.anexo : `http://localhost:3000/uploads/${oco.anexo}`;
+                    campos.anexo.src = oco.anexo.startsWith('http') ? oco.anexo : `${API_URL}/uploads/${oco.anexo}`;
                     campos.anexo.style.display = "block";
                 } else {
                     campos.anexo.style.display = "none";
@@ -333,7 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:3000/api/ocorrencias/${id}`, {
+            const response = await fetch(`${API_URL}/api/ocorrencias/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

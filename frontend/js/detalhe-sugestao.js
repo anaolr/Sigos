@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -123,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function carregarSugestaoReal() {
         try {
-            const response = await fetch(`http://localhost:3000/api/sugestoes/${id}`, {
+            const response = await fetch(`${API_URL}/api/sugestoes/${id}`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
 
@@ -146,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (campos.anexo) {
                 if (sug.anexo) {
-                    campos.anexo.src = sug.anexo.startsWith('http') ? sug.anexo : `http://localhost:3000/uploads/${sug.anexo}`;
+                    campos.anexo.src = sug.anexo.startsWith('http') ? sug.anexo : `${API_URL}/uploads/${sug.anexo}`;
                     campos.anexo.style.display = "block";
                 } else {
                     campos.anexo.style.display = "none";
@@ -177,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:3000/api/sugestoes/${id}`, {
+            const response = await fetch(`${API_URL}/api/sugestoes/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

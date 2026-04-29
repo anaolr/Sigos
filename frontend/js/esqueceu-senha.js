@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("form-recuperacao");
     const mensagem = document.getElementById("mensagem-recuperacao");
@@ -14,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnSubmit.disabled = true;
 
             try {
-                const response = await fetch("http://localhost:3000/api/auth/esqueci-senha", {
+                const response = await fetch(`${API_URL}/api/auth/esqueci-senha`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email })

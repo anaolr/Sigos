@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 1. SEGURANÇA (VERIFICA SE É ADMIN)
@@ -33,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function carregarNotificacoes() {
         try {
-            const response = await fetch("http://localhost:3000/api/notificacoes", {
+            const response = await fetch(`${API_URL}/api/notificacoes`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
 
@@ -105,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnMarcarLidas) {
         btnMarcarLidas.addEventListener("click", async () => {
             try {
-                await fetch("http://localhost:3000/api/notificacoes/lidas", {
+                await fetch(`${API_URL}/api/notificacoes/lidas`, {
                     method: "PUT",
                     headers: { "Authorization": `Bearer ${token}` }
                 });

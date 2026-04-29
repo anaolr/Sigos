@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 1. SEGURANÇA E LOGOUT
@@ -52,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     async function carregarPerfil() {
         try {
-            const response = await fetch("http://localhost:3000/api/auth/me", {
+            const response = await fetch(`${API_URL}/api/auth/me`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
 
@@ -83,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (nomeSidebar) nomeSidebar.textContent = dados.nome || "Administrador";
 
         if (dados.foto) {
-            previewFoto.src = `http://localhost:3000/uploads/${dados.foto}`;
+            previewFoto.src = `${API_URL}/uploads/${dados.foto}`;
             previewFoto.style.display = "block";
             iconeFoto.style.display = "none";
         } else {
@@ -114,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
         mensagem.textContent = "";
 
         if (fotoOriginal) {
-            previewFoto.src = `http://localhost:3000/uploads/${fotoOriginal}`;
+            previewFoto.src = `${API_URL}/uploads/${fotoOriginal}`;
             previewFoto.style.display = "block";
             iconeFoto.style.display = "none";
         } else {
@@ -188,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch("http://localhost:3000/api/auth/me", {
+            const response = await fetch(`${API_URL}/api/auth/me`, {
                 method: "PUT",
                 headers: { "Authorization": `Bearer ${token}` }, // Não coloque Content-Type aqui!
                 body: formData

@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -36,9 +40,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const headers = { "Authorization": `Bearer ${token}` };
             
             const [resOcoMinhas, resSugMinhas, resSugTodas] = await Promise.all([
-                fetch("http://localhost:3000/api/ocorrencias/minhas", { headers }),
-                fetch("http://localhost:3000/api/sugestoes/minhas", { headers }),
-                fetch("http://localhost:3000/api/sugestoes/todas", { headers })
+                fetch(`${API_URL}/api/ocorrencias/minhas`, { headers }),
+                fetch(`${API_URL}/api/sugestoes/minhas`, { headers }),
+                fetch(`${API_URL}/api/sugestoes/todas`, { headers })
             ]);
 
             const minhasOcorrencias = resOcoMinhas.ok ? await resOcoMinhas.json() : [];
@@ -125,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         botao.disabled = true;
 
                         try {
-                            const response = await fetch(`http://localhost:3000/api/sugestoes/${id}/votar`, {
+                            const response = await fetch(`${API_URL}/api/sugestoes/${id}/votar`, {
                                 method: "PUT",
                                 headers: { "Authorization": `Bearer ${token}` }
                             });

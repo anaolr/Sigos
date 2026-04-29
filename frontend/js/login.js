@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
   // --------------------------------------------------------
   // 1. LÓGICA DE AUTO-LOGIN (Verificando Token)
@@ -71,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Para evitar alterar o back agora, mande o que o usuário digitar na 'matricula'
         // disfarçado de 'email', pois o authController.js procura por 'email'.
         // (Você pode digitar 'admin@sigos.com' no campo de matrícula da tela para testar)
-        const response = await fetch("http://localhost:3000/api/auth/login", {
+        const response = await fetch(`${API_URL}/api/auth/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

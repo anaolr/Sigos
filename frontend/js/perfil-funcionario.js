@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
@@ -49,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function carregarPerfil() {
       try {
           // Usa a rota /me que está no authRouters.js
-          const response = await fetch("http://localhost:3000/api/auth/me", {
+          const response = await fetch(`${API_URL}/api/auth/me`, {
               headers: { "Authorization": `Bearer ${token}` }
           });
 
@@ -77,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // A MÁGICA DA FOTO AQUI!
     if (dados.foto) {
-      previewFoto.src = `http://localhost:3000/uploads/${dados.foto}`;
+      previewFoto.src = `${API_URL}/uploads/${dados.foto}`;
       previewFoto.style.display = "block";
       iconeFoto.style.display = "none";
     } else {
@@ -99,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Restaura a foto também se cancelar
     if (fotoOriginal) {
-      previewFoto.src = `http://localhost:3000/uploads/${fotoOriginal}`;
+      previewFoto.src = `${API_URL}/uploads/${fotoOriginal}`;
       previewFoto.style.display = "block";
       iconeFoto.style.display = "none";
     } else {
@@ -155,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-        const response = await fetch("http://localhost:3000/api/auth/me", {
+        const response = await fetch(`${API_URL}/api/auth/me`, {
             method: "PUT",
             headers: { 
                 // RETIRAR O Content-Type PARA FORMDATA FUNCIONAR!

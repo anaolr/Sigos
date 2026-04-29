@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -38,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Busca os dados do usuário para preencher Nome e Setor
     async function carregarUsuario() {
         try {
-            const response = await fetch("http://localhost:3000/api/auth/me", {
+            const response = await fetch(`${API_URL}/api/auth/me`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (response.ok) {
@@ -93,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch("http://localhost:3000/api/ocorrencias", {
+            const response = await fetch(`${API_URL}/api/ocorrencias`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`

@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("form-nova-senha");
     const mensagem = document.getElementById("mensagem-senha");
@@ -40,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
             mensagem.textContent = "A redefinir...";
 
             try {
-                const response = await fetch("http://localhost:3000/api/auth/redefinir-senha", {
+                const response = await fetch(`${API_URL}/api/auth/redefinir-senha`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     // Enviamos o token do URL junto com a senha nova!

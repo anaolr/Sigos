@@ -1,3 +1,7 @@
+const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+    ? "http://localhost:3000" 
+    : "https://sigos-production.up.railway.app";
+
 document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 1. SEGURANÇA E LOGOUT
@@ -34,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     async function carregarMural() {
         try {
-            const response = await fetch("http://localhost:3000/api/sugestoes/todas", {
+            const response = await fetch(`${API_URL}/api/sugestoes/todas`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
 
@@ -102,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 // CHAMA A NOVA ROTA EXCLUSIVA DE VOTOS
-                const response = await fetch(`http://localhost:3000/api/sugestoes/${id}/votar`, {
+                const response = await fetch(`${API_URL}/api/sugestoes/${id}/votar`, {
                     method: "PUT",
                     headers: { "Authorization": `Bearer ${token}` }
                 });
