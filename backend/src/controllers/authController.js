@@ -133,49 +133,44 @@ export const solicitarRecuperacao = async (req, res) => {
             { where: { id: user.id } }
         );
 
-        // CONFIGURAÇÃO AJUSTADA PARA O RAILWAY (Porta 465)
+        // O link agora aponta para o seu domínio oficial da Vercel
+        const linkRecuperacao = `https://sigos-wheat.vercel.app/pages/redefinir-senha.html?token=${token}`;
+
+        // LOG DE SEGURANÇA: Isso permite que você veja o link no terminal do Railway 
+        // mesmo que o e-mail seja bloqueado pelo servidor!
+        console.log("------------------------------------------");
+        console.log(`🔗 LINK DE RECUPERAÇÃO PARA ${email}:`);
+        console.log(linkRecuperacao);
+        console.log("------------------------------------------");
+
         const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, 
-    auth: {
-        user: 'ana.freitas0046@gmail.com',
-        pass: 'zamt asgu wlln jeti'
-    },
-    // CONFIGURAÇÕES DE TIMEOUT (Para evitar o ETIMEDOUT)
-    connectionTimeout: 20000, // 20 segundos
-    greetingTimeout: 20000,
-    socketTimeout: 20000,
-    tls: {
-        rejectUnauthorized: false,
-        minVersion: "TLSv1.2" // Força uma versão estável do protocolo
-    }
-});
-
-        // CORREÇÃO DO LINK: Agora ele usa o link da VERCEL onde está o seu site
-       const linkRecuperacao = `https://sigos-wheat.vercel.app/pages/redefinir-senha.html?token=${token}`;
-
-        await transporter.sendMail({
-            from: '"Sistema SIGOS" <ana.freitas0046@gmail.com>',
-            to: email,
-            subject: 'Recuperação de Senha - SIGOS',
-            html: `
-                <div style="font-family: Arial, sans-serif; color: #333;">
-                    <h2>Recuperação de Senha</h2>
-                    <p>Olá, <strong>${user.nome}</strong>!</p>
-                    <p>Você solicitou a alteração da sua senha no SIGOS.</p>
-                    <p>Clique no botão abaixo para criar uma nova senha (este link expira em 1 hora):</p>
-                    <a href="${linkRecuperacao}" style="display:inline-block; padding:12px 25px; background-color:#007bff; color:white; text-decoration:none; border-radius:5px; font-weight:bold;">Redefinir Minha Senha</a>
-                    <p style="margin-top:20px; font-size: 12px; color: #777;">Se você não solicitou isso, ignore este e-mail.</p>
-                </div>
-            `
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: process.env.EMAIL_USER, // Variável de ambiente!
+                pass: process.env.EMAIL_PASS  // Variável de ambiente!
+            },
+            tls: {
+                family: 4,
+                rejectUnauthorized: false
+            }
         });
 
-        res.status(200).json({ mensagem: "Se o e-mail existir, receberá um link de recuperação." });
+        await transporter.sendMail({
+            from: `"Sistema SIGOS" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: 'Recuperação de Senha - SIGOS',
+            html: `<h2>Recuperação de Senha</h2><p>Clique no link: <a href="${linkRecuperacao}">${linkRecuperacao}</a></p>`
+        });
+
+        res.status(200).json({ mensagem: "Processo iniciado. Verifique seu e-mail (ou os logs do sistema)." });
 
     } catch (error) {
-        console.error("Erro ao enviar e-mail:", error);
-        res.status(500).json({ erro: "Erro ao processar a solicitação." });
+        // Se der erro de envio (timeout), ainda retornamos sucesso para o usuário
+        // mas avisamos no console do servidor o que houve.
+        console.error("⚠️ O e-mail não pôde ser enviado via SMTP, mas o link foi gerado nos logs.");
+        res.status(200).json({ mensagem: "Solicitação processada. Verifique os logs do servidor para o link." });
     }
 };
 
