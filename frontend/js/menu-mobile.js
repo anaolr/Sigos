@@ -32,7 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 transform: translateX(-100%); 
                 transition: transform 0.3s ease; 
                 margin: 0 !important; 
-                background-color: #2c3e50 !important; /* Azul escuro do painel */
+                
+                /* REMOVIDO O BACKGROUND-COLOR FORÇADO AQUI */
+                /* O painel agora usará a cor original definida no seu CSS */
+                
                 overflow-y: auto !important; 
                 overflow-x: hidden !important;
                 display: block !important;
@@ -42,20 +45,21 @@ document.addEventListener("DOMContentLoaded", () => {
             #painel.menu-aberto { transform: translateX(0); }
             #overlay-menu.ativo { display: block; opacity: 1; }
 
-            /* Forçar o botão de logout azul e visível */
+            /* Botão de logout acompanhando a estética do seu sistema */
             #btn-logout {
                 display: flex !important;
                 visibility: visible !important;
                 margin: 50px auto 20px auto !important;
                 width: 85% !important;
                 padding: 12px !important;
-                background-color: #3498db !important; /* AZUL VOLTOU AQUI */
+                /* Você pode ajustar essa cor se quiser que o botão tenha uma cor específica */
+                background-color: #e74c3c !important; /* Cor vermelha para destacar */
                 color: white !important;
+                border: 1px solid white !important;
                 border-radius: 8px !important;
                 justify-content: center;
                 align-items: center;
                 text-decoration: none !important;
-                border: none !important;
                 font-weight: bold;
                 cursor: pointer;
             }
