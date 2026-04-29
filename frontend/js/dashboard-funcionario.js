@@ -1,6 +1,8 @@
-const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
-    ? "http://localhost:3000" 
-    : "https://sigos-production.up.railway.app";
+// const API_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" 
+//     ? "http://localhost:3000" 
+//     : "https://sigos-production.up.railway.app";
+
+const API_URL = "https://sigos-production.up.railway.app";
 
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
