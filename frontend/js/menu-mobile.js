@@ -14,15 +14,14 @@ document.addEventListener("DOMContentLoaded", () => {
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             padding-left: 10px;
-            border-left: 4px solid #f1c40f; /* Cor de destaque (amarelo/dourado) */
+            border-left: 4px solid #f1c40f;
             transition: all 0.3s ease;
         }
 
-       @media (max-width: 768px) {
+        @media (max-width: 768px) {
             #btn-hamburguer { display: block; }
             #btn-fechar-menu { display: block; }
             
-            /* --- CORREÇÃO DO SCROLL AQUI NESTA REGRA #painel --- */
             #painel { 
                 position: fixed !important; 
                 top: 0; 
@@ -33,13 +32,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 transform: translateX(-100%); 
                 transition: transform 0.3s ease; 
                 margin: 0 !important; 
-                overflow-y: auto !important; /* A MÁGICA: Permite descer a tela do menu! */
-                padding-bottom: 40px !important; /* Dá um espacinho extra em baixo do botão de logout */
+                overflow-y: auto !important; 
+                /* O segredo para o iPhone 15: padding gigante no fundo */
+                padding-bottom: 80px !important; 
+                background-color: #2c3e50; /* Garante que o fundo não fique transparente */
             }
             
+            /* Ajuste para o botão de logout não ficar colado no fim */
+            #btn-logout {
+                margin-top: 40px !important;
+                display: block !important;
+                width: 90% !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+
             #painel.menu-aberto { transform: translateX(0); }
             #overlay-menu.ativo { display: block; opacity: 1; }
-            #usuario { flex-direction: column !important; margin-top: 30px; }
+            #usuario { flex-direction: column !important; margin-top: 40px; margin-bottom: 20px; }
         }
     `;
     document.head.appendChild(style);
@@ -82,32 +92,21 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnFechar) btnFechar.addEventListener("click", fecharMenu);
     overlay.addEventListener("click", fecharMenu);
 
-
-    // --------------------------------------------------------
-    // 2. LÓGICA DE MENU ATIVO (Highlight da página atual)
-    // --------------------------------------------------------
     const linksMenu = document.querySelectorAll(".link-menu a");
-    const urlAtual = window.location.pathname.split("/").pop(); // Pega o nome do arquivo atual (ex: dashboard-admin.html)
+    const urlAtual = window.location.pathname.split("/").pop();
 
     linksMenu.forEach(link => {
         const hrefDoLink = link.getAttribute("href").replace("./", "");
         if (hrefDoLink === urlAtual) {
-            link.parentElement.classList.add("ativo"); // Adiciona a classe na div pai (.link-menu)
+            link.parentElement.classList.add("ativo");
         }
     });
 
-    // --------------------------------------------------------
-    // 3. LÓGICA DE LOGOUT SEGURO
-    // --------------------------------------------------------
     const btnLogout = document.getElementById("btn-logout");
     if (btnLogout) {
-        // Remove o redirecionamento HTML direto para podermos limpar os dados antes
         btnLogout.removeAttribute("onclick");
-        
         btnLogout.addEventListener("click", () => {
-            // Apaga a sessão da memória
             localStorage.removeItem("usuarioLogado");
-            // Redireciona para o login
             window.location.href = "../pages/login.html";
         });
     }
