@@ -1,105 +1,162 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const nomeSidebar = document.getElementById("nome-sidebar");
-  const btnCancelar = document.getElementById("btn-cancelar");
-  const mensagem = document.getElementById("mensagem-cadastro");
-  const form = document.getElementById("form-cadastro-usuario");
+    // ==========================================
+    // 1. SEGURANÇA E LOGOUT
+    // ==========================================
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    const nomeAtual = localStorage.getItem("nome");
 
-  const campos = {
-    nome: document.getElementById("nome"),
-    email: document.getElementById("email"),
-    matricula: document.getElementById("matricula"),
-    cargo: document.getElementById("cargo"),
-    setor: document.getElementById("setor"),
-    tipoUsuario: document.getElementById("tipo_usuario"),
-    senha: document.getElementById("senha"),
-    confirmarSenha: document.getElementById("confirmar_senha"),
-  };
-
-  // Ajuste: O sistema agora usa o Token para saber se alguém está logado
-  const token = localStorage.getItem("token");
-  if (!token) {
-    // Se não tem crachá (token), volta para o login
-    window.location.href = "./login.html";
-  }
-
-  // Se você salvou o nome do admin no login, podemos exibir aqui
-  // Se não salvou, podemos deixar um padrão ou buscar do perfil
-  nomeSidebar.textContent = "Administrador";
-
-  function limparFormulario() {
-    form.reset();
-    mensagem.textContent = "";
-  }
-
-  function validarFormulario() {
-    if (!campos.nome.value.trim()) {
-      mensagem.textContent = "Informe o nome completo.";
-      campos.nome.focus();
-      return false;
+    // Verifica se tem token e se é Administrador. Se não for, expulsa!
+    if (!token || role !== "admin") {
+        localStorage.clear();
+        window.location.href = "./login.html";
+        return; 
     }
-    if (!campos.email.value.trim()) {
-      mensagem.textContent = "Informe o e-mail.";
-      campos.email.focus();
-      return false;
-    }
-    if (campos.senha.value.length < 6) {
-      mensagem.textContent = "A senha deve ter pelo menos 6 caracteres.";
-      campos.senha.focus();
-      return false;
-    }
-    if (campos.senha.value !== campos.confirmarSenha.value) {
-      mensagem.textContent = "As senhas não coincidem.";
-      campos.confirmarSenha.focus();
-      return false;
-    }
-    return true;
-  }
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    mensagem.textContent = "Cadastrando...";
-    mensagem.style.color = "blue";
+    const nomeSidebar = document.getElementById("nome-sidebar");
+    if (nomeSidebar && nomeAtual) {
+        nomeSidebar.textContent = nomeAtual;
+    }
 
-    if (!validarFormulario()) return;
+    const btnSair = document.getElementById("btn-logout");
+    if (btnSair) {
+        btnSair.addEventListener("click", (event) => {
+            event.preventDefault();
+            localStorage.clear();
+            window.location.href = "./login.html";
+        });
+    }
 
-    // Montando o pacote para o Chef (Backend)
-    const payload = {
-      nome: campos.nome.value.trim(),
-      email: campos.email.value.trim(),
-      senha: campos.senha.value,
-      role: campos.tipoUsuario.value, // O backend chama de 'role'
-      matricula: campos.matricula.value.trim(), // Agora estamos enviando a matrícula!
-      cargo: campos.cargo.value.trim(), // E o cargo!
-      setor: campos.setor.value.trim(), // E o setor!
+    // ==========================================
+    // 2. ELEMENTOS DO FORMULÁRIO
+    // ==========================================
+    const form = document.getElementById("form-cadastro-usuario");
+    const btnCancelar = document.getElementById("btn-cancelar");
+    const mensagem = document.getElementById("mensagem-cadastro");
+
+    const campos = {
+        nome: document.getElementById("nome"),
+        email: document.getElementById("email"),
+        matricula: document.getElementById("matricula"),
+        cargo: document.getElementById("cargo"),
+        setor: document.getElementById("setor"),
+        tipoUsuario: document.getElementById("tipo_usuario"),
+        senha: document.getElementById("senha"),
+        confirmarSenha: document.getElementById("confirmar_senha"),
     };
 
-    try {
-      // ENVIANDO PARA O BACKEND
-      const response = await fetch("http://localhost:3000/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Passando o crachá do admin
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        mensagem.style.color = "green";
-        mensagem.textContent = "✅ Usuário cadastrado com sucesso!";
-        form.reset();
-      } else {
-        mensagem.style.color = "#d62828";
-        mensagem.textContent = data.message || "Erro ao cadastrar usuário.";
-      }
-    } catch (erro) {
-      mensagem.style.color = "#d62828";
-      mensagem.textContent = "❌ Erro de conexão com o servidor.";
-      console.error("Erro no fetch:", erro);
+    function limparFormulario() {
+        if(form) form.reset();
+        if(mensagem) mensagem.textContent = "";
     }
-  });
 
-  btnCancelar.addEventListener("click", limparFormulario);
+    // ==========================================
+    // 3. VALIDAÇÃO ANTES DO ENVIO
+    // ==========================================
+    function validarFormulario() {
+        mensagem.style.color = "#d62828"; // Vermelho para erros
+
+        if (!campos.nome.value.trim()) {
+            mensagem.textContent = "Informe o nome completo.";
+            campos.nome.focus();
+            return false;
+        }
+        if (!campos.email.value.trim() || !campos.email.value.includes('@')) {
+            mensagem.textContent = "Informe um e-mail válido.";
+            campos.email.focus();
+            return false;
+        }
+        if (!campos.matricula.value.trim()) {
+            mensagem.textContent = "A matrícula é obrigatória.";
+            campos.matricula.focus();
+            return false;
+        }
+        if (!campos.setor.value) {
+            mensagem.textContent = "Selecione um setor para o utilizador.";
+            campos.setor.focus();
+            return false;
+        }
+        if (!campos.tipoUsuario.value) {
+            mensagem.textContent = "Selecione o tipo de utilizador.";
+            campos.tipoUsuario.focus();
+            return false;
+        }
+        if (campos.senha.value.length < 6) {
+            mensagem.textContent = "A senha deve ter pelo menos 6 caracteres.";
+            campos.senha.focus();
+            return false;
+        }
+        if (campos.senha.value !== campos.confirmarSenha.value) {
+            mensagem.textContent = "As senhas não coincidem.";
+            campos.confirmarSenha.focus();
+            return false;
+        }
+        return true;
+    }
+
+    // ==========================================
+    // 4. REGISTO NO BANCO DE DADOS
+    // ==========================================
+    if (form) {
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            
+            if(mensagem) {
+                mensagem.textContent = "A registar...";
+                mensagem.style.color = "blue";
+            }
+
+            if (!validarFormulario()) return;
+
+            // Montar o Payload (O que vai para o Backend)
+            const payload = {
+                nome: campos.nome.value.trim(),
+                email: campos.email.value.trim(),
+                senha: campos.senha.value,
+                role: campos.tipoUsuario.value, // "funcionario", "gestor" ou "admin"
+                matricula: campos.matricula.value.trim(),
+                cargo: campos.cargo.value.trim() || "N/A", // Se não preencher, guarda "N/A"
+                setor: campos.setor.value.trim(), 
+            };
+
+            try {
+                // Chama a rota de Registo (que já estava pronta no seu Backend)
+                const response = await fetch("http://localhost:3000/api/auth/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                        // Não passamos o Bearer Token aqui porque a rota de register original não exigia.
+                        // Se o seu backend exigir, descomente a linha abaixo:
+                        // "Authorization": `Bearer ${token}` 
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if(mensagem) {
+                        mensagem.style.color = "green";
+                        mensagem.textContent = `✅ Utilizador (${payload.nome}) cadastrado com sucesso!`;
+                    }
+                    form.reset();
+                } else {
+                    // Erros do tipo: "Email já existe"
+                    throw new Error(data.message || data.erro || "Erro ao cadastrar utilizador.");
+                }
+            } catch (erro) {
+                if(mensagem) {
+                    mensagem.style.color = "#d62828";
+                    mensagem.textContent = erro.message === "Failed to fetch" 
+                        ? "❌ Erro: O servidor (Backend) está desligado." 
+                        : `❌ ${erro.message}`;
+                }
+                console.error("Erro no fetch:", erro);
+            }
+        });
+    }
+
+    if (btnCancelar) {
+        btnCancelar.addEventListener("click", limparFormulario);
+    }
 });

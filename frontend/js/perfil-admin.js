@@ -1,4 +1,29 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // ==========================================
+    // 1. SEGURANÇA E LOGOUT
+    // ==========================================
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    // Verifica se tem token e se é realmente um administrador
+    if (!token || role !== "admin") {
+        localStorage.clear();
+        window.location.href = "login.html";
+        return; 
+    }
+
+    const btnSair = document.getElementById("btn-logout");
+    if (btnSair) {
+        btnSair.addEventListener("click", (event) => {
+            event.preventDefault();
+            localStorage.clear();
+            window.location.href = "./login.html";
+        });
+    }
+
+    // ==========================================
+    // 2. ELEMENTOS DO DOM
+    // ==========================================
     const form = document.getElementById("form-perfil-admin");
     const btnCancelar = document.getElementById("btn-cancelar");
     const btnAlterarFoto = document.getElementById("btn-alterar-foto");
@@ -19,45 +44,46 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmarSenha: document.getElementById("confirmar-senha"),
     };
 
-    // --- NOVO SISTEMA DE VERIFICAÇÃO COM TOKEN ---
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-    const nomeAtual = localStorage.getItem("nome");
-
-    if (!token) {
-        window.location.href = "login.html";
-        return; // É muito importante colocar o return para parar o JS aqui
-    }
-    // ----------------------------------------------
-
-    // MOCK: Dados falsos para preencher a tela por enquanto
-    const adminMock = {
-        nome: nomeAtual || "Administrador",
-        matricula: "0000",
-        email: "admin@sigos.com",
-        tipo_usuario: "admin",
-        cargo: "Diretoria",
-        setor: "Administração",
-        foto: "" 
-    };
-
     let dadosOriginais = {};
     let fotoOriginal = "";
 
+    // ==========================================
+    // 3. BUSCAR DADOS REAIS
+    // ==========================================
+    async function carregarPerfil() {
+        try {
+            const response = await fetch("http://localhost:3000/api/auth/me", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const dadosUsuarioBanco = await response.json();
+                preencherFormulario(dadosUsuarioBanco);
+                salvarEstadoOriginal(dadosUsuarioBanco);
+            } else {
+                throw new Error("Sessão expirada ou erro no servidor");
+            }
+        } catch (erro) {
+            console.error("Erro de conexão ao buscar perfil:", erro);
+            localStorage.clear();
+            window.location.href = "./login.html";
+        }
+    }
+
     function preencherFormulario(dados) {
-        campos.nome.value = dados.nome || "";
-        campos.matricula.value = dados.matricula || "";
-        campos.email.value = dados.email || "";
-        campos.tipoUsuario.value = dados.tipo_usuario || "";
-        campos.cargo.value = dados.cargo || "";
-        campos.setor.value = dados.setor || "";
-        campos.senha.value = "";
-        campos.confirmarSenha.value = "";
+        if(campos.nome) campos.nome.value = dados.nome || "";
+        if(campos.matricula) campos.matricula.value = dados.matricula || "";
+        if(campos.email) campos.email.value = dados.email || "";
+        if(campos.tipoUsuario) campos.tipoUsuario.value = "Administrador";
+        if(campos.cargo) campos.cargo.value = dados.cargo || "Diretoria"; // Admin geralmente é diretoria
+        if(campos.setor) campos.setor.value = dados.setor || "Administração";
+        if(campos.senha) campos.senha.value = "";
+        if(campos.confirmarSenha) campos.confirmarSenha.value = "";
         
         if (nomeSidebar) nomeSidebar.textContent = dados.nome || "Administrador";
 
         if (dados.foto) {
-            previewFoto.src = dados.foto;
+            previewFoto.src = `http://localhost:3000/uploads/${dados.foto}`;
             previewFoto.style.display = "block";
             iconeFoto.style.display = "none";
         } else {
@@ -75,6 +101,9 @@ document.addEventListener("DOMContentLoaded", () => {
         fotoOriginal = dados.foto || "";
     }
 
+    // ==========================================
+    // 4. INTERAÇÕES E VALIDAÇÃO
+    // ==========================================
     function restaurarFormulario() {
         campos.nome.value = dadosOriginais.nome || "";
         campos.email.value = dadosOriginais.email || "";
@@ -83,10 +112,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (nomeSidebar) nomeSidebar.textContent = dadosOriginais.nome || "Administrador";
         
         mensagem.textContent = "";
-        mensagem.style.color = "#d62828";
 
         if (fotoOriginal) {
-            previewFoto.src = fotoOriginal;
+            previewFoto.src = `http://localhost:3000/uploads/${fotoOriginal}`;
             previewFoto.style.display = "block";
             iconeFoto.style.display = "none";
         } else {
@@ -106,12 +134,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!nome) {
             mensagem.textContent = "O nome é obrigatório.";
+            mensagem.style.color = "#d62828";
             campos.nome.focus();
             return false;
         }
 
         if (!email) {
             mensagem.textContent = "O e-mail é obrigatório.";
+            mensagem.style.color = "#d62828";
             campos.email.focus();
             return false;
         }
@@ -119,12 +149,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (senha || confirmarSenha) {
             if (senha.length < 6) {
                 mensagem.textContent = "A nova senha deve ter pelo menos 6 caracteres.";
+                mensagem.style.color = "#d62828";
                 campos.senha.focus();
                 return false;
             }
 
             if (senha !== confirmarSenha) {
                 mensagem.textContent = "As senhas não coincidem.";
+                mensagem.style.color = "#d62828";
                 campos.confirmarSenha.focus();
                 return false;
             }
@@ -132,58 +164,66 @@ document.addEventListener("DOMContentLoaded", () => {
         return true;
     }
 
+    // ==========================================
+    // 5. SALVAR DADOS NO BANCO DE DADOS
+    // ==========================================
     async function salvarAlteracoes(event) {
         event.preventDefault();
-        mensagem.textContent = "";
-        mensagem.style.color = "#d62828";
+        mensagem.textContent = "A salvar...";
+        mensagem.style.color = "blue";
 
         if (!validarFormulario()) return;
 
-        const payload = {
-            nome: campos.nome.value.trim(),
-            email: campos.email.value.trim(),
-        };
+        // Usa FormData para permitir o envio da foto real para o Multer
+        const formData = new FormData();
+        formData.append("nome", campos.nome.value.trim());
+        formData.append("email", campos.email.value.trim());
 
-        if (campos.senha.value.trim()) {
-            payload.senha = campos.senha.value.trim();
+        if (campos.senha.value.trim() !== "") {
+            formData.append("senha", campos.senha.value.trim());
         }
 
         if (inputFoto.files[0]) {
-            payload.foto = inputFoto.files[0].name;
+            formData.append("foto", inputFoto.files[0]);
         }
 
         try {
-            console.log("Simulando envio para o backend:", payload);
+            const response = await fetch("http://localhost:3000/api/auth/me", {
+                method: "PUT",
+                headers: { "Authorization": `Bearer ${token}` }, // Não coloque Content-Type aqui!
+                body: formData
+            });
 
-            // SIMULAÇÃO DE SUCESSO:
-            mensagem.style.color = "green";
-            mensagem.textContent = "Alterações salvas com sucesso.";
+            if (response.ok) {
+                const dadosSalvos = await response.json();
+                
+                mensagem.style.color = "green";
+                mensagem.textContent = "Alterações salvas com sucesso!";
 
-            dadosOriginais.nome = payload.nome;
-            dadosOriginais.email = payload.email;
-            
-            // Atualiza o localStorage com o novo nome
-            localStorage.setItem("nome", payload.nome);
-            if (nomeSidebar) nomeSidebar.textContent = payload.nome;
+                // Atualiza o estado original com os novos dados
+                dadosOriginais.nome = dadosSalvos.nome;
+                fotoOriginal = dadosSalvos.foto || fotoOriginal; // Guarda o novo nome da foto
+                
+                // Atualiza o Cache local
+                localStorage.setItem("nome", dadosSalvos.nome);
+                if (nomeSidebar) nomeSidebar.textContent = dadosSalvos.nome;
 
-            if (previewFoto.src && previewFoto.style.display === "block") {
-                fotoOriginal = previewFoto.src;
+                campos.senha.value = "";
+                campos.confirmarSenha.value = "";
+                inputFoto.value = "";
+            } else {
+                throw new Error("Erro ao salvar no servidor");
             }
-
-            campos.senha.value = "";
-            campos.confirmarSenha.value = "";
-            inputFoto.value = "";
         } catch (error) {
             console.error(error);
             mensagem.style.color = "#d62828";
-            mensagem.textContent = "Não foi possível salvar as alterações.";
+            mensagem.textContent = "Erro de conexão ao tentar salvar.";
         }
     }
 
+    // Interações de Foto
     if (btnAlterarFoto) {
-        btnAlterarFoto.addEventListener("click", () => {
-            inputFoto.click();
-        });
+        btnAlterarFoto.addEventListener("click", () => inputFoto.click());
     }
 
     if (inputFoto) {
@@ -193,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!arquivo.type.startsWith("image/")) {
                 mensagem.style.color = "#d62828";
-                mensagem.textContent = "Selecione um arquivo de imagem válido.";
+                mensagem.textContent = "Selecione um ficheiro de imagem válido.";
                 inputFoto.value = "";
                 return;
             }
@@ -211,13 +251,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (campos.nome) {
         campos.nome.addEventListener("input", () => {
-            if (nomeSidebar) nomeSidebar.textContent = campos.nome.value.trim() || "Nome do usuário";
+            if (nomeSidebar) nomeSidebar.textContent = campos.nome.value.trim() || "Administrador";
         });
     }
 
     if (btnCancelar) btnCancelar.addEventListener("click", restaurarFormulario);
     if (form) form.addEventListener("submit", salvarAlteracoes);
 
-    preencherFormulario(adminMock);
-    salvarEstadoOriginal(adminMock);
+    // Arranca a página puxando os dados
+    carregarPerfil();
 });

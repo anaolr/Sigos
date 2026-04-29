@@ -166,6 +166,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="link-menu"><i class="fa-solid fa-table-columns"></i><a href="./dashboard-gestor.html">Dashboard</a></div>
                 <div class="link-menu"><i class="fa-solid fa-bell"></i><a href="./notificacoes.html">Notificações</a></div>
             `;
+        } else if (perfil === "admin") {
+            // ---> ADICIONE ESTE BLOCO AQUI <---
+            ferramentas.innerHTML = `
+                <div class="link-menu"><i class="fa-solid fa-user"></i><a href="./perfil-admin.html">Perfil</a></div>
+                <div class="link-menu"><i class="fa-solid fa-user-plus"></i><a href="./cadastro-usuario.html">Cadastro</a></div>
+                <div class="link-menu"><i class="fa-solid fa-chart-line"></i><a href="./dashboard-admin.html">Dashboard</a></div>
+                <div class="link-menu"><i class="fa-solid fa-bell"></i><a href="./notificacoes-admin.html">Notificações</a></div>
+            `;
         }
     }
 

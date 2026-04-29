@@ -10,6 +10,10 @@ const Sugestao = sequelize.define("Sugestao", {
   status: {
     type: DataTypes.ENUM("Enviada", "Em análise", "Aprovada", "Rejeitada"),
     defaultValue: "Enviada"
+  },
+  votos: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
   }
 });
 

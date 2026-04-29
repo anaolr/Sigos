@@ -1,9 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // ==========================================
+    // 1. SEGURANÇA E LOGOUT
+    // ==========================================
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
     const nome = localStorage.getItem("nome");
 
-    if (!token || role !== "funcionario") {
+    if (!token) {
         localStorage.clear();
         window.location.href = "./login.html";
         return;
@@ -21,89 +24,102 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const containerMural = document.getElementById("container-mural-completo");
-    let sugestoesMural = [];
-    let votosUsuario = JSON.parse(localStorage.getItem("votosSugestoes")) || [];
+    // ==========================================
+    // 2. ELEMENTOS DO DOM
+    // ==========================================
+    const listaMural = document.getElementById("container-mural-completo"); // CORRIGIDO!
 
+    // ==========================================
+    // 3. LÓGICA DO MURAL
+    // ==========================================
     async function carregarMural() {
         try {
-            const response = await fetch("http://localhost:3000/api/sugestoes", {
+            const response = await fetch("http://localhost:3000/api/sugestoes/todas", {
                 headers: { "Authorization": `Bearer ${token}` }
             });
-            if (response.ok) {
-                sugestoesMural = await response.json();
-                renderizarMural();
+
+            if (!response.ok) throw new Error("Erro ao carregar sugestões");
+            const sugestoes = await response.json();
+
+            if (listaMural) {
+                listaMural.innerHTML = "";
+                
+                if (sugestoes.length === 0) {
+                    listaMural.innerHTML = "<p style='color: var(--text-color);'>Ainda não há sugestões no mural. Seja o primeiro a contribuir!</p>";
+                    return;
+                }
+
+                sugestoes.forEach(sug => {
+                    const statusClass = sug.status === "Aprovada" ? "resolvida" : (sug.status === "Rejeitada" ? "alta" : "andamento");
+                    const autor = sug.User ? sug.User.nome : "Anónimo";
+                    
+                    const card = document.createElement("article");
+                    card.className = "card-sugestao";
+                    
+                    // Estrutura mantida para encaixar no seu CSS
+                    card.innerHTML = `
+                        <div class="sugestao-header">
+                            <h3>${sug.titulo}</h3>
+                            <span class="tag ${statusClass}">${sug.status || "Enviada"}</span>
+                        </div>
+                        <p class="descricao">${sug.descricao}</p>
+                        <div class="sugestao-meta">
+                            <span><i class="fa-solid fa-user"></i> Autor: ${autor}</span>
+                            <span><i class="fa-solid fa-building"></i> Setor Alvo: ${sug.setor}</span>
+                        </div>
+                        <div class="sugestao-acoes">
+                            <button class="btn-votar btn-apoio" data-id="${sug.id}" data-votos="${sug.votos || 0}">
+                                <i class="fa-solid fa-thumbs-up"></i> Apoiar (${sug.votos || 0})
+                            </button>
+                        </div>
+                    `;
+                    listaMural.appendChild(card);
+                });
+
+                adicionarEventosVoto();
             }
         } catch (erro) {
-            console.error("Erro ao carregar mural:", erro);
+            console.error(erro);
+            if(listaMural) listaMural.innerHTML = "<p style='color:red;'>Erro ao comunicar com o servidor.</p>";
         }
-    }
-
-    function renderizarMural() {
-        if (!containerMural) return;
-        containerMural.innerHTML = "";
-
-        if(sugestoesMural.length === 0) {
-            containerMural.innerHTML = "<p>Nenhuma sugestão enviada ainda.</p>";
-            return;
-        }
-
-        sugestoesMural.forEach((sugestao) => {
-            const jaVotou = votosUsuario.includes(sugestao.id);
-            const article = document.createElement("article");
-            article.classList.add("sugestao-card");
-
-            article.innerHTML = `
-                <div class="sugestao-topo">
-                    <span class="tag-setor">${sugestao.setorOrigem || "Geral"}</span>
-                    <span class="votos"><i class="fa-solid fa-thumbs-up"></i> <span id="votos-${sugestao.id}">${sugestao.votos || 0}</span></span>
-                </div>
-                <h3>${sugestao.titulo}</h3>
-                <p>${sugestao.descricao}</p>
-                <div class="acoes-sugestao">
-                    <button class="btn-votar ${jaVotou ? "votado" : ""}" data-id="${sugestao.id}" data-votos="${sugestao.votos || 0}">
-                        <i class="fa-solid ${jaVotou ? "fa-check" : "fa-thumbs-up"}"></i>
-                        ${jaVotou ? "Votado" : "Apoiar sugestão"}
-                    </button>
-                </div>
-            `;
-            containerMural.appendChild(article);
-        });
-        adicionarEventosVoto();
     }
 
     function adicionarEventosVoto() {
-        document.querySelectorAll(".btn-votar").forEach((botao) => {
-            botao.addEventListener("click", async () => {
-                if (botao.classList.contains("votado")) return;
-                
-                const idSugestao = Number(botao.dataset.id);
-                let qtdVotos = Number(botao.dataset.votos) + 1;
+        if (!listaMural) return;
+        listaMural.onclick = null; // Limpa eventos antigos
 
-                try {
-                    // Atualiza no Banco de Dados
-                    const response = await fetch(`http://localhost:3000/api/sugestoes/${idSugestao}`, {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                        },
-                        body: JSON.stringify({ votos: qtdVotos })
-                    });
+        listaMural.onclick = async (e) => {
+            const botao = e.target.closest(".btn-votar");
+            if (!botao) return;
 
-                    if (response.ok) {
-                        votosUsuario.push(idSugestao);
-                        localStorage.setItem("votosSugestoes", JSON.stringify(votosUsuario));
-                        
-                        botao.classList.add("votado");
-                        botao.innerHTML = `<i class="fa-solid fa-check"></i> Votado`;
-                        document.getElementById(`votos-${idSugestao}`).textContent = qtdVotos;
-                    }
-                } catch (erro) {
-                    console.error("Erro ao computar voto", erro);
+            e.preventDefault();
+            const id = botao.dataset.id;
+
+            // Efeito visual de carregamento
+            const textoOriginal = botao.innerHTML;
+            botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A votar...';
+            botao.disabled = true;
+
+            try {
+                // CHAMA A NOVA ROTA EXCLUSIVA DE VOTOS
+                const response = await fetch(`http://localhost:3000/api/sugestoes/${id}/votar`, {
+                    method: "PUT",
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    carregarMural(); // Atualiza a tela com o novo voto
+                } else {
+                    alert("Não foi possível registar o voto.");
+                    botao.innerHTML = textoOriginal;
+                    botao.disabled = false;
                 }
-            });
-        });
+            } catch (error) {
+                console.error("Erro ao votar:", error);
+                botao.innerHTML = textoOriginal;
+                botao.disabled = false;
+            }
+        };
     }
 
     carregarMural();

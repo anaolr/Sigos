@@ -13,6 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const nomeSidebar = document.getElementById("nome-sidebar");
     const btnSair = document.getElementById("btn-logout");
 
+    // ==========================================
+    // CORREÇÃO: VARIÁVEIS DA PRÉVIA DA IMAGEM
+    // ==========================================
+    const previewContainer = document.getElementById("preview-container");
+    const previewAnexo = document.getElementById("preview-anexo");
+    const inputAnexo = document.getElementById("anexo");
+
     // Lógica de Logout
     if (btnSair) {
         btnSair.addEventListener("click", (e) => {
@@ -43,17 +50,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     carregarUsuario();
 
+    // ==========================================
+    // CORREÇÃO: MOSTRAR PRÉVIA DA IMAGEM
+    // ==========================================
+    if (inputAnexo) {
+        inputAnexo.addEventListener("change", (event) => {
+            const arquivo = event.target.files[0];
+            if (!arquivo || !arquivo.type.startsWith("image/")) {
+                if(previewContainer) previewContainer.style.display = "none";
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (previewAnexo) previewAnexo.src = e.target.result;
+                if (previewContainer) previewContainer.style.display = "block";
+            };
+            reader.readAsDataURL(arquivo);
+        });
+    }
+
     // Envio do formulário
     const form = document.getElementById("form-ocorrencia");
     const mensagem = document.getElementById("mensagem-formulario");
-    const inputAnexo = document.getElementById("anexo");
 
     if(form) form.addEventListener("submit", async (event) => {
         event.preventDefault();
         mensagem.style.color = "blue";
         mensagem.textContent = "A enviar...";
 
-        // Usamos FormData em vez de um Objeto normal. Ele aceita ficheiros reais!
         const formData = new FormData();
         formData.append("titulo", document.getElementById("titulo").value.trim());
         formData.append("descricao", document.getElementById("descricao").value.trim());
@@ -64,20 +88,17 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("urgencia", document.getElementById("urgencia").value);
         formData.append("status", "Aberta");
 
-        const inputAnexo = document.getElementById("anexo");
-        if (inputAnexo.files[0]) {
-            formData.append("anexo", inputAnexo.files[0]); // AQUI ESTÁ A MAGIA! Mandamos o ficheiro verdadeiro.
+        if (inputAnexo && inputAnexo.files[0]) {
+            formData.append("anexo", inputAnexo.files[0]); 
         }
 
         try {
             const response = await fetch("http://localhost:3000/api/ocorrencias", {
                 method: "POST",
                 headers: {
-                    // ⚠️ ATENÇÃO: Quando envia FormData, NÃO coloque "Content-Type": "application/json" !!
-                    // O navegador trata disso automaticamente criando um 'boundary' de ficheiros.
                     "Authorization": `Bearer ${token}`
                 },
-                body: formData // Enviamos a caixa inteira
+                body: formData 
             });
 
             if(response.ok) {
@@ -85,11 +106,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 mensagem.textContent = "Ocorrência enviada com sucesso!";
                 form.reset();
                 if(campoDataEnvio) campoDataEnvio.value = formatarDataAtual();
-                if(previewContainer) previewContainer.style.display = "none";
+                if(previewContainer) previewContainer.style.display = "none"; // Agora funciona perfeitamente!
             } else {
-                throw new Error("Erro ao salvar.");
+                throw new Error("Erro ao salvar no servidor.");
             }
         } catch(erro) {
+            console.error("Erro detetado:", erro);
             mensagem.style.color = "#d62828";
             mensagem.textContent = "Erro de conexão.";
         }

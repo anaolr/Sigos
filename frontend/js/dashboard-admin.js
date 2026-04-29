@@ -1,257 +1,230 @@
-const dados = {
-  ocorrencias: {
-    alta: 12,
-    media: 8,
-    baixa: 1
-  },
+document.addEventListener("DOMContentLoaded", () => {
+    // ==========================================
+    // 1. SEGURANÇA E LOGOUT
+    // ==========================================
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    const nome = localStorage.getItem("nome");
 
-  indicadores: {
-    tempo: "2 dias",
-    setor: "Produção",
-    sugestoesAnalise: 5
-  },
-
-  alerta: {
-    setor: "Produção",
-    local: "Fábrica 1",
-    prioridade: "Alta"
-  },
-
-  resumo: {
-    criticas: 2,
-    andamento: 23,
-    abertas: 150,
-    resolvidas: 75
-  }
-};
-
-const sugestoesDestaqueAdmin = [
-  {
-    id: 1,
-    titulo: "Adicionar micro-ondas na copa",
-    descricao:
-      "Muitos funcionários almoçam na empresa e atualmente existe apenas um micro-ondas para todo o andar.",
-    setor: "Administrativo",
-    votosPositivos: 167,
-    votosNegativos: 13,
-    status: "em_analise"
-  },
-
-  {
-    id: 2,
-    titulo: "Melhorar rede Wi-Fi",
-    descricao:
-      "A internet cai com frequência no segundo andar e isso atrapalha o trabalho da equipe.",
-    setor: "TI",
-    votosPositivos: 98,
-    votosNegativos: 7,
-    status: "em_analise"
-  }
-];
-
-function atualizarDashboard() {
-  document.getElementById("alta").innerText = dados.ocorrencias.alta;
-  document.getElementById("media").innerText = dados.ocorrencias.media;
-  document.getElementById("baixa").innerText = dados.ocorrencias.baixa;
-
-  document.getElementById("tempo").innerText = dados.indicadores.tempo;
-  document.getElementById("setor").innerText = dados.indicadores.setor;
-  document.getElementById("sugestoes_analise").innerText =
-    dados.indicadores.sugestoesAnalise;
-
-  document.getElementById("alertaSetor").innerText = dados.alerta.setor;
-  document.getElementById("alertaLocal").innerText = dados.alerta.local;
-  document.getElementById("alertaPrioridade").innerText =
-    dados.alerta.prioridade;
-
-  document.getElementById(
-    "criticas"
-  ).innerText = `${dados.resumo.criticas} Críticas`;
-
-  document.getElementById(
-    "andamento"
-  ).innerText = `${dados.resumo.andamento} Em andamento`;
-
-  document.getElementById(
-    "abertas"
-  ).innerText = `${dados.resumo.abertas} Abertas`;
-
-  document.getElementById(
-    "resolvidas"
-  ).innerText = `${dados.resumo.resolvidas} Resolvidas`;
-}
-
-function formatarStatus(status) {
-  const mapa = {
-    em_analise: "Em análise",
-    aprovada: "Aprovada",
-    rejeitada: "Rejeitada"
-  };
-
-  return mapa[status] || status;
-}
-
-function classeStatus(status) {
-  const mapa = {
-    em_analise: "andamento",
-    aprovada: "resolvida",
-    rejeitada: "alta"
-  };
-
-  return mapa[status] || "andamento";
-}
-
-function renderizarSugestoesDestaqueAdmin() {
-  const lista = document.getElementById("lista-sugestoes-destaque-admin");
-  const resumo = document.getElementById("resumo-votacao-admin");
-
-  if (!lista || !resumo) return;
-
-  lista.innerHTML = "";
-
-  sugestoesDestaqueAdmin.forEach((sugestao) => {
-    const article = document.createElement("article");
-    article.classList.add("sugestao-destaque-admin");
-
-    article.innerHTML = `
-      <div class="sugestao-topo-admin">
-        <span class="tag-setor-admin">
-          ${sugestao.setor}
-        </span>
-
-        <span class="votos-admin">
-          <i class="fa-solid fa-thumbs-up"></i>
-          ${sugestao.votosPositivos}
-        </span>
-      </div>
-
-      <h4>${sugestao.titulo}</h4>
-
-      <p>${sugestao.descricao}</p>
-
-      <span class="tag status-sugestao-admin ${classeStatus(sugestao.status)}">
-        ${formatarStatus(sugestao.status)}
-      </span>
-    `;
-
-    lista.appendChild(article);
-  });
-
-  const totalPositivos = sugestoesDestaqueAdmin.reduce(
-    (acc, item) => acc + item.votosPositivos,
-    0
-  );
-
-  const totalNegativos = sugestoesDestaqueAdmin.reduce(
-    (acc, item) => acc + item.votosNegativos,
-    0
-  );
-
-  resumo.innerHTML = `
-    <span>
-      <i class="fa-solid fa-thumbs-up"></i>
-      ${totalPositivos}
-    </span>
-
-    <span>
-      <i class="fa-solid fa-thumbs-down"></i>
-      ${totalNegativos}
-    </span>
-  `;
-}
-
-let grafico = null;
-
-function criarGrafico() {
-  const ctx = document.getElementById("graficoPizza");
-
-  if (!ctx) return;
-
-  if (grafico) {
-    grafico.destroy();
-  }
-
-  grafico = new Chart(ctx, {
-    type: "pie",
-
-    data: {
-      labels: ["Alta", "Média", "Baixa"],
-
-      datasets: [
-        {
-          data: [
-            dados.ocorrencias.alta,
-            dados.ocorrencias.media,
-            dados.ocorrencias.baixa
-          ],
-
-          backgroundColor: ["#f5b5b5", "#fff1b8", "#c8f0d2"],
-
-          borderColor: "#ffffff",
-          borderWidth: 2,
-          hoverOffset: 10
-        }
-      ]
-    },
-
-    options: {
-      responsive: true,
-
-      plugins: {
-        legend: {
-          position: "bottom",
-
-          labels: {
-            color: "#333",
-            font: {
-              size: 12
-            }
-          }
-        }
-      }
+    // Verifica se tem token e se é admin
+    if (!token || role !== "admin") {
+        localStorage.clear();
+        window.location.href = "./login.html";
+        return;
     }
-  });
-}
 
-function iniciar() {
-  // 1. Verificando as Credenciais
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
-  const nome = localStorage.getItem("nome");
+    const nomeSidebar = document.getElementById("nome-sidebar");
+    const tituloBoasVindas = document.getElementById("boas-vindas-nome");
 
-  // Se não tiver token, manda de volta para o login
-  if (!token) {
-    window.location.href = "login.html";
-    return; // Para a execução do código aqui
-  }
+    if (nome) {
+        if (nomeSidebar) nomeSidebar.textContent = nome;
+        if (tituloBoasVindas) tituloBoasVindas.textContent = `Olá, ${nome} 👋`;
+    }
 
-  // 2. Colocar o nome real da pessoa na tela
-  const nomeSidebar = document.getElementById("nome-sidebar");
-  const tituloBoasVindas = document.getElementById("boas-vindas-nome");
+    const btnSair = document.getElementById("btn-logout");
+    if (btnSair) {
+        btnSair.addEventListener("click", (event) => {
+            event.preventDefault();
+            localStorage.clear();
+            window.location.href = "./login.html";
+        });
+    }
 
-  if (nome) {
-    if (nomeSidebar) nomeSidebar.textContent = nome;
-    if (tituloBoasVindas) tituloBoasVindas.textContent = `Olá, ${nome} 👋`;
-  }
+    // Variável para guardar o gráfico de forma a poder ser destruído se precisar de recarregar
+    let graficoPizza = null;
 
-  // 3. Lógica do botão de LOGOUT
-  const btnSair = document.getElementById("btn-logout");
-  if (btnSair) {
-    btnSair.addEventListener("click", (event) => {
-      event.preventDefault(); // Impede o botão de fazer algo automático
-      
-      // Apaga todos os dados da sessão (O Crachá)
-      localStorage.clear(); 
-      
-      // Manda pro login
-      window.location.href = "./login.html";
-    });
-  }
+    // ==========================================
+    // 2. FUNÇÕES AUXILIARES
+    // ==========================================
+    function formatarStatus(status) {
+        const mapa = { "Em análise": "Em análise", "Aprovada": "Aprovada", "Rejeitada": "Rejeitada", "Enviada": "Enviada" };
+        return mapa[status] || status;
+    }
 
-  // 4. Iniciar o restante da página
-  atualizarDashboard();
-  renderizarSugestoesDestaqueAdmin();
-  criarGrafico();
-}
+    function classeStatus(status) {
+        const mapa = { "Em análise": "andamento", "Aprovada": "resolvida", "Rejeitada": "alta", "Enviada": "andamento" };
+        return mapa[status] || "andamento";
+    }
 
-document.addEventListener("DOMContentLoaded", iniciar);
+    function formatarSetor(setor) {
+        if (!setor || setor === "N/A") return "N/A";
+        const s = String(setor).toLowerCase();
+        if (s === "ti") return "TI";
+        if (s === "rh") return "RH";
+        if (s === "manutencao") return "Manutenção";
+        if (s === "limpeza") return "Limpeza";
+        if (s === "administrativo") return "Administrativo";
+        if (s === "seguranca" || s === "segurança") return "Segurança";
+        return setor.charAt(0).toUpperCase() + setor.slice(1);
+    }
+
+    // ==========================================
+    // 3. BUSCAR E CALCULAR DADOS REAIS
+    // ==========================================
+    async function inicializarDashboardAdmin() {
+        try {
+            // Puxa tudo do banco (como admin, ele precisa ver a empresa inteira)
+            const [resOco, resSug] = await Promise.all([
+                fetch("http://localhost:3000/api/ocorrencias/todas", { headers: { "Authorization": `Bearer ${token}` } }),
+                fetch("http://localhost:3000/api/sugestoes/todas", { headers: { "Authorization": `Bearer ${token}` } })
+            ]);
+
+            const ocorrencias = resOco.ok ? await resOco.json() : [];
+            const sugestoes = resSug.ok ? await resSug.json() : [];
+
+            // ------------------------------------------------
+            // CÁLCULOS DAS OCORRÊNCIAS
+            // ------------------------------------------------
+            const countAlta = ocorrencias.filter(o => o.prioridade === "alta" || o.prioridade === "crítica").length;
+            const countMedia = ocorrencias.filter(o => o.prioridade === "média").length;
+            const countBaixa = ocorrencias.filter(o => o.prioridade === "baixa").length;
+
+            const countAbertas = ocorrencias.filter(o => o.status === "Aberta").length;
+            const countAndamento = ocorrencias.filter(o => o.status === "Em andamento").length;
+            const countResolvidas = ocorrencias.filter(o => o.status === "Concluída").length;
+            const countCriticas = ocorrencias.filter(o => o.prioridade === "crítica").length;
+
+            // ------------------------------------------------
+            // CÁLCULOS DAS SUGESTÕES
+            // ------------------------------------------------
+            const sugestoesAnalise = sugestoes.filter(s => s.status === "Em análise" || s.status === "Enviada").length;
+
+            // Pegar as 2 sugestões com mais votos
+            const sugestoesDestaque = [...sugestoes].sort((a, b) => (b.votos || 0) - (a.votos || 0)).slice(0, 2);
+            
+            // Total de votos na empresa
+            const totalVotos = sugestoes.reduce((acc, sug) => acc + (sug.votos || 0), 0);
+
+            // ------------------------------------------------
+            // DESCOBRIR O SETOR MAIS CRÍTICO
+            // ------------------------------------------------
+            const contagemPorSetor = {};
+            ocorrencias.forEach(o => {
+                const setor = formatarSetor(o.setorResponsavel);
+                if (setor !== "N/A") {
+                    if (!contagemPorSetor[setor]) contagemPorSetor[setor] = 0;
+                    contagemPorSetor[setor]++;
+                }
+            });
+
+            let setorMaisCritico = "N/A";
+            let maxOcorrencias = 0;
+            for (const [setor, qtd] of Object.entries(contagemPorSetor)) {
+                if (qtd > maxOcorrencias) {
+                    maxOcorrencias = qtd;
+                    setorMaisCritico = setor;
+                }
+            }
+
+            // Descobrir a última ocorrência crítica/alta para o "Alerta"
+            const ultimoAlerta = [...ocorrencias].find(o => o.prioridade === "crítica" || o.prioridade === "alta");
+
+            // ==========================================
+            // 4. INJETAR NO HTML
+            // ==========================================
+            
+            // Cards Superiores
+            document.getElementById("alta").innerText = countAlta;
+            document.getElementById("media").innerText = countMedia;
+            document.getElementById("baixa").innerText = countBaixa;
+
+            // Indicadores
+            document.getElementById("tempo").innerText = "A calcular..."; // Precisaria de lógica complexa de datas
+            document.getElementById("setor").innerText = setorMaisCritico;
+            document.getElementById("sugestoes_analise").innerText = sugestoesAnalise;
+
+            // Info Grid Inferior
+            document.getElementById("criticas").innerText = `${countCriticas} Críticas`;
+            document.getElementById("andamento").innerText = `${countAndamento} Em andamento`;
+            document.getElementById("abertas").innerText = `${countAbertas} Abertas`;
+            document.getElementById("resolvidas").innerText = `${countResolvidas} Resolvidas`;
+
+            // Bloco de Alerta
+            if (ultimoAlerta) {
+                document.getElementById("alertaSetor").innerText = formatarSetor(ultimoAlerta.setorResponsavel);
+                document.getElementById("alertaLocal").innerText = ultimoAlerta.local || "N/A";
+                document.getElementById("alertaPrioridade").innerText = ultimoAlerta.prioridade ? ultimoAlerta.prioridade.charAt(0).toUpperCase() + ultimoAlerta.prioridade.slice(1) : "Alta";
+            } else {
+                document.getElementById("alertaSetor").innerText = "Nenhum";
+                document.getElementById("alertaLocal").innerText = "N/A";
+                document.getElementById("alertaPrioridade").innerText = "Normal";
+            }
+
+            // Lista de Sugestões em Destaque
+            const listaDestaque = document.getElementById("lista-sugestoes-destaque-admin");
+            if (listaDestaque) {
+                listaDestaque.innerHTML = "";
+                
+                if (sugestoesDestaque.length === 0) {
+                    listaDestaque.innerHTML = "<p>Nenhuma sugestão recebida.</p>";
+                } else {
+                    sugestoesDestaque.forEach(sug => {
+                        const article = document.createElement("article");
+                        article.classList.add("sugestao-destaque-admin");
+                        article.innerHTML = `
+                            <div class="sugestao-topo-admin">
+                                <span class="tag-setor-admin">${formatarSetor(sug.setor)}</span>
+                                <span class="votos-admin"><i class="fa-solid fa-thumbs-up"></i> ${sug.votos || 0}</span>
+                            </div>
+                            <h4>${sug.titulo}</h4>
+                            <p>${sug.descricao}</p>
+                            <span class="tag status-sugestao-admin ${classeStatus(sug.status)}">
+                                ${formatarStatus(sug.status)}
+                            </span>
+                        `;
+                        listaDestaque.appendChild(article);
+                    });
+                }
+            }
+
+            // Resumo da Votação
+            const resumoVotacao = document.getElementById("resumo-votacao-admin");
+            if (resumoVotacao) {
+                resumoVotacao.innerHTML = `
+                    <span><i class="fa-solid fa-thumbs-up"></i> ${totalVotos} apoios totais</span>
+                `;
+            }
+
+            // Montar Gráfico
+            criarGrafico(countAlta, countMedia, countBaixa);
+
+        } catch (error) {
+            console.error("Erro ao carregar Dashboard do Admin:", error);
+        }
+    }
+
+    function criarGrafico(alta, media, baixa) {
+        const ctx = document.getElementById("graficoPizza");
+        if (!ctx) return;
+
+        if (graficoPizza) {
+            graficoPizza.destroy();
+        }
+
+        graficoPizza = new Chart(ctx, {
+            type: "pie",
+            data: {
+                labels: ["Alta/Crítica", "Média", "Baixa"],
+                datasets: [{
+                    data: [alta, media, baixa],
+                    backgroundColor: ["#f5b5b5", "#fff1b8", "#c8f0d2"],
+                    borderColor: "#ffffff",
+                    borderWidth: 2,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                        labels: { color: "#333", font: { size: 12 } }
+                    }
+                }
+            }
+        });
+    }
+
+    // Inicia tudo
+    inicializarDashboardAdmin();
+});

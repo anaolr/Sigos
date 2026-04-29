@@ -28,14 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let solicitacoesCriadas = [];
     let ocorrenciasAtribuidas = [];
 
-    // ==========================================
-    // BUSCAR DADOS REAIS USANDO AS ROTAS /MINHAS
-    // ==========================================
     async function carregarMinhasSolicitacoes() {
         try {
             const headers = { "Authorization": `Bearer ${token}` };
 
-            // Chamada para as rotas do backend que já filtram pelo UserId do token
             const [resOco, resSug] = await Promise.all([
                 fetch("http://localhost:3000/api/ocorrencias/minhas", { headers }),
                 fetch("http://localhost:3000/api/sugestoes/minhas", { headers })
@@ -44,19 +40,49 @@ document.addEventListener("DOMContentLoaded", () => {
             const ocorrenciasDB = resOco.ok ? await resOco.json() : [];
             const sugestoesDB = resSug.ok ? await resSug.json() : [];
 
-            // Mapeia as Ocorrências (seguindo o modelo do banco)
-            const minhasOcorrencias = ocorrenciasDB.map(oco => ({
-                id: oco.id, 
-                tipo: "ocorrencia", 
-                titulo: oco.titulo, 
-                descricao: oco.descricao,
-                status: oco.status || "Aberta", 
-                prioridade: oco.prioridade || "baixa",
-                data: new Date(oco.createdAt).toLocaleDateString('pt-BR'),
-                setor: oco.setorResponsavel || oco.setorOrigem || "N/A"
-            }));
+            // Limpa as listas
+            solicitacoesCriadas = [];
+            ocorrenciasAtribuidas = [];
 
-            // Mapeia as Sugestões (seguindo o modelo do banco)
+            // O backend devolve TODAS (criadas e atribuídas). Temos de separar no JS para o Front.
+            // Para isso, comparamos o autor com o nome do utilizador logado. Se for igual, foi ele que criou.
+            // Se for diferente, é porque foi atribuída a ele.
+            // Limpa as listas
+            solicitacoesCriadas = [];
+            ocorrenciasAtribuidas = [];
+
+            ocorrenciasDB.forEach(oco => {
+                const item = {
+                    id: oco.id, 
+                    tipo: "ocorrencia", 
+                    titulo: oco.titulo, 
+                    descricao: oco.descricao,
+                    status: oco.status || "Aberta", 
+                    prioridade: oco.prioridade || "baixa",
+                    data: new Date(oco.createdAt).toLocaleDateString('pt-BR'),
+                    setor: oco.setorResponsavel || oco.setorOrigem || "N/A",
+                    autor: oco.User ? oco.User.nome : "N/A"
+                };
+
+                let foiAdicionada = false;
+
+                // 1. Se foi a funcionária que criou, vai para as Criadas
+                if (oco.User && oco.User.nome === nome) {
+                    solicitacoesCriadas.push(item);
+                    foiAdicionada = true;
+                }
+
+                // 2. Se foi atribuída a ela, vai para as Atribuições
+                if (oco.responsavel === nome) {
+                    ocorrenciasAtribuidas.push(item);
+                    foiAdicionada = true;
+                }
+
+                // Proteção extra
+                if (!foiAdicionada) solicitacoesCriadas.push(item);
+            });
+
+            
             const minhasSugestoes = sugestoesDB.map(sug => ({
                 id: sug.id, 
                 tipo: "sugestao", 
@@ -67,12 +93,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 setor: sug.setor || "N/A"
             }));
 
-            solicitacoesCriadas = [...minhasOcorrencias, ...minhasSugestoes];
+            solicitacoesCriadas = [...solicitacoesCriadas, ...minhasSugestoes];
             
-            // Caso existam ocorrências atribuídas (lógica futura de responsabilidade)
-            // Por enquanto, buscamos ocorrências gerais que possam estar ligadas ao seu nome se necessário
-            ocorrenciasAtribuidas = []; 
-
             renderizarSolicitacoesCriadas("todas");
             renderizarAtribuicoes("todas");
 
@@ -83,26 +105,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function formatarStatus(status) {
-        // Mapa ajustado para aceitar as letras maiúsculas que vêm do banco
-        const mapa = { 
-            "Aberta": "Aberta", 
-            "Enviada": "Enviada", 
-            "Em andamento": "Em andamento", 
-            "Em análise": "Em análise", 
-            "Concluída": "Concluída", 
-            "Aprovada": "Aprovada", 
-            "Rejeitada": "Rejeitada" 
-        };
+        const mapa = { "Aberta": "Aberta", "Enviada": "Enviada", "Em andamento": "Em andamento", "Em análise": "Em análise", "Concluída": "Concluída", "Aprovada": "Aprovada", "Rejeitada": "Rejeitada" };
         return mapa[status] || status;
     }
 
     function formatarPrioridade(prioridade) {
-        const mapa = { 
-            "baixa": "Baixa", 
-            "média": "Média", 
-            "alta": "Alta", 
-            "crítica": "Crítica" 
-        };
+        const mapa = { "baixa": "Baixa", "média": "Média", "alta": "Alta", "crítica": "Crítica" };
         return mapa[prioridade] || prioridade;
     }
 
@@ -110,9 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!lista) return;
         lista.innerHTML = "";
         
-        const filtradas = tipo === "todas" 
-            ? solicitacoesCriadas 
-            : solicitacoesCriadas.filter(item => item.tipo === tipo);
+        const filtradas = tipo === "todas" ? solicitacoesCriadas : solicitacoesCriadas.filter(item => item.tipo === tipo);
 
         if (filtradas.length === 0) {
             lista.innerHTML = `
@@ -128,9 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
         filtradas.forEach((item) => {
             const card = document.createElement("article");
             card.className = `card-solicitacao ${item.tipo}`;
-            const destino = item.tipo === "ocorrencia" 
-                ? `./detalhe-ocorrencia.html?id=${item.id}` 
-                : `./detalhe-sugestao.html?id=${item.id}`;
+            const destino = item.tipo === "ocorrencia" ? `./detalhe-ocorrencia.html?id=${item.id}` : `./detalhe-sugestao.html?id=${item.id}`;
 
             card.innerHTML = `
                 <div class="info-solicitacao">
@@ -153,9 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!listaAtribuicoes) return;
         listaAtribuicoes.innerHTML = "";
         
-        const filtradas = tipo === "todas" || tipo === "ocorrencia" 
-            ? ocorrenciasAtribuidas 
-            : [];
+        const filtradas = (tipo === "todas" || tipo === "ocorrencia") ? ocorrenciasAtribuidas : [];
 
         if (filtradas.length === 0) {
             listaAtribuicoes.innerHTML = `

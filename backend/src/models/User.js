@@ -33,6 +33,15 @@ const User = sequelize.define("User", {
         type: DataTypes.ENUM("admin", "gestor", "funcionario"),
         defaultValue: "funcionario",
     },
+    // NOVOS CAMPOS PARA RECUPERAÇÃO DE SENHA
+  resetToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  resetTokenExpires: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  }
 });
 
 export default User;
