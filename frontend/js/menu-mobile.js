@@ -32,33 +32,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 transform: translateX(-100%); 
                 transition: transform 0.3s ease; 
                 margin: 0 !important; 
-                background-color: #2c3e50 !important;
-                
-                /* Habilita o scroll interno */
+                background-color: #2c3e50 !important; /* Azul escuro do painel */
                 overflow-y: auto !important; 
                 overflow-x: hidden !important;
                 display: block !important;
-                
-                /* O segredo: Espaço extra no final para o botão respirar */
                 padding-bottom: 120px !important; 
             }
             
             #painel.menu-aberto { transform: translateX(0); }
             #overlay-menu.ativo { display: block; opacity: 1; }
 
-            /* Forçar o botão de logout a aparecer no final da lista */
+            /* Forçar o botão de logout azul e visível */
             #btn-logout {
-                display: flex !important; /* Garante que ele não herde display: none */
+                display: flex !important;
                 visibility: visible !important;
-                margin: 50px auto 20px auto !important; /* Muita margem no topo para separar dos links */
+                margin: 50px auto 20px auto !important;
                 width: 85% !important;
                 padding: 12px !important;
-                background-color: #e74c3c !important; /* Cor vermelha para destacar */
+                background-color: #3498db !important; /* AZUL VOLTOU AQUI */
                 color: white !important;
                 border-radius: 8px !important;
                 justify-content: center;
                 align-items: center;
                 text-decoration: none !important;
+                border: none !important;
+                font-weight: bold;
+                cursor: pointer;
             }
 
             #usuario { flex-direction: column !important; margin-top: 50px; margin-bottom: 30px; text-align: center; }
@@ -66,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     document.head.appendChild(style);
 
-    // --- O restante da lógica permanece igual ---
     const overlay = document.createElement("div");
     overlay.id = "overlay-menu";
     document.body.appendChild(overlay);
