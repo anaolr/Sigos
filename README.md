@@ -1,65 +1,192 @@
-# 🛡️ SIGOS - Sistema Integrado de Gestão de Ocorrências
 
-> **Status do Projeto:** 🚀 Em Produção (Hospedado na Nuvem)
+# 🛡️ SIGOS — Sistema Integrado de Gestão de Ocorrências e Sugestões
 
-O **SIGOS** é uma solução digital Full Stack criada para modernizar o registo e a monitorização de problemas técnicos e operacionais. O sistema substitui processos manuais por um fluxo automatizado que conecta Funcionários, Gestores e Administradores numa plataforma única e segura.
+![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-Backend-000000?logo=express)
+![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?logo=mysql&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Concluído-2ECC71)
+![Deploy](https://img.shields.io/badge/Deploy-Vercel%20%7C%20Railway-181717?logo=vercel)
 
----
+Sistema web **full stack** desenvolvido como **Projeto Integrador** do curso Técnico em Desenvolvimento de Sistemas.
 
-## 🌐 Arquitetura de Nuvem (Onde o sistema "vive")
+O SIGOS foi criado para centralizar o gerenciamento de ocorrências e sugestões em ambientes organizacionais, permitindo que funcionários registrem solicitações e acompanhem seu andamento, enquanto gestores e administradores realizam o gerenciamento por meio de diferentes níveis de acesso.
 
-Para garantir que o sistema estivesse acessível em qualquer lugar, utilizei uma infraestrutura dividida em duas camadas:
-
-1.  **Interface (Frontend - Vercel):** O "rosto" do sistema. Hospedado na **Vercel**, focado em performance e rapidez no carregamento das páginas.
-2.  **Servidor e Memória (Backend & Base de Dados - Railway):** O "cérebro" do sistema. Hospedado no **Railway**, onde a lógica de negócio é processada e os dados são guardados de forma persistente num banco de dados **MySQL**.
-
-
-
----
-
-## 🛠️ Tecnologias e Conceitos (O que há "por baixo do capô")
-
-Aqui estão as tecnologias explicadas de forma simples para facilitar o entendimento do projeto:
-
-* **Node.js & Express:** O motor do servidor. Responsável por receber os pedidos dos utilizadores e enviar as respostas certas.
-* **MySQL & Sequelize:** O **MySQL** é onde os dados são organizados em tabelas. O **Sequelize** funciona como um "tradutor" (ORM), permitindo manipular a base de dados usando apenas JavaScript.
-* **JWT (JSON Web Token):** Funciona como um "passe digital". Após o login, o utilizador recebe este token para navegar nas áreas restritas sem precisar de colocar a senha repetidamente.
-* **Bcrypt:** Sistema de segurança que encripta as senhas. Elas são transformadas em códigos complexos antes de serem guardadas, garantindo que a senha real nunca fique exposta.
-* **Nodemailer:** O serviço de envio de mensagens do sistema, utilizado para o fluxo de recuperação de acesso.
-
-
+🌐 **Deploy:**  
+https://sigos-wheat.vercel.app
 
 ---
 
-## 🔑 Funcionalidades Principais
+# Funcionalidades
 
-### 1. Níveis de Acesso Dinâmicos
-O sistema adapta-se automaticamente ao perfil de quem faz o login:
-* **Funcionários:** Criam ocorrências e acompanham os seus estados.
-* **Gestores:** Monitorizam e gerem as ocorrências dos seus setores específicos.
-* **Administradores:** Têm controlo total sobre utilizadores, métricas e configurações globais.
-
-### 2. Recuperação de Acesso via Logs de Servidor
-Devido a restrições de segurança em servidores de nuvem gratuitos para e-mails (SMTP), implementámos uma solução técnica de **Observabilidade**: o link de recuperação é gerado de forma segura e exibido nos **logs do servidor**. Isto permite que o fluxo de segurança seja validado e testado em tempo real durante a apresentação.
-
----
-
-## 🚀 Como Explorar o Projeto
-
-1.  **Aceda ao link oficial:** [https://sigos-wheat.vercel.app](https://sigos-wheat.vercel.app)
-2.  **Teste os Perfis:** Pode entrar como Administrador ou criar um novo registo de Funcionário.
-3.  **Dashboards:** Explore os gráficos que são alimentados automaticamente a cada nova ocorrência registada na base de dados.
+- Cadastro e autenticação de usuários
+- Login utilizando autenticação JWT
+- Controle de acesso baseado em perfis (Funcionário, Gestor e Administrador)
+- Cadastro de ocorrências e sugestões
+- Edição e atualização de ocorrências
+- Acompanhamento do status das solicitações
+- Dashboard com métricas atualizadas automaticamente
+- Recuperação de senha
+- Criptografia de senhas utilizando Bcrypt
+- Persistência de dados em banco MySQL
+- Deploy completo utilizando Vercel e Railway
 
 ---
 
-## 📄 Guia de Instalação (Para Desenvolvedores)
+# Arquitetura da Aplicação
 
-Se desejar rodar o projeto localmente, configure as variáveis de ambiente num ficheiro `.env`:
+O sistema foi dividido em duas camadas principais:
+
+```text
+Frontend (HTML • CSS • JavaScript)
+
+            │
+
+            ▼
+
+API REST (Node.js + Express)
+
+            │
+
+            ▼
+
+MySQL (Sequelize ORM)
+
+            │
+
+            ▼
+
+Railway
+```
+
+O frontend é responsável pela interface e interação com o usuário, enquanto o backend concentra toda a lógica de negócio, autenticação, validações e comunicação com o banco de dados.
+
+---
+
+# Estrutura do Projeto
+
+```text
+SIGOS
+
+├── frontend
+│   ├── css
+│   ├── js
+│   ├── pages
+│   └── assets
+│
+├── backend
+│   ├── controllers
+│   ├── middlewares
+│   ├── models
+│   ├── routes
+│   ├── services
+│   ├── config
+│   └── server.js
+│
+└── README.md
+```
+
+---
+
+# Tecnologias Utilizadas
+
+### Frontend
+
+- HTML5
+- CSS3
+- JavaScript (ES6)
+
+### Backend
+
+- Node.js
+- Express.js
+
+### Banco de Dados
+
+- MySQL
+- Sequelize ORM
+
+### Autenticação e Segurança
+
+- JWT (JSON Web Token)
+- Bcrypt
+
+### Serviços
+
+- Nodemailer
+
+### Ferramentas
+
+- Git
+- GitHub
+
+### Deploy
+
+- Vercel
+- Railway
+
+---
+
+# Aprendizados
+
+Durante o desenvolvimento do SIGOS aprofundei meus conhecimentos em desenvolvimento **full stack**, compreendendo como frontend, backend e banco de dados trabalham de forma integrada.
+
+Aprendi a desenvolver APIs REST utilizando **Node.js** e **Express**, implementar autenticação com **JWT**, proteger senhas utilizando **Bcrypt** e manipular bancos de dados relacionais através do **Sequelize**.
+
+Também pratiquei organização de código em camadas, integração entre cliente e servidor, controle de permissões por perfil de usuário, consumo de APIs e deploy de aplicações utilizando **Vercel** e **Railway**.
+
+Este foi o projeto mais completo que desenvolvi durante a formação técnica, permitindo aplicar conceitos de desenvolvimento web desde a modelagem do banco de dados até a publicação da aplicação na nuvem.
+
+---
+
+# Como executar o projeto
+
+Clone o repositório:
+
+```bash
+git clone https://github.com/anaolr/Sigos.git
+```
+
+Entre na pasta do projeto:
+
+```bash
+cd Sigos
+```
+
+Instale as dependências do backend:
+
+```bash
+npm install
+```
+
+Configure um arquivo `.env` contendo:
 
 ```env
-DB_HOST=seu_host_do_railway
+DB_HOST=seu_host
 DB_USER=seu_usuario
 DB_PASS=sua_senha
-JWT_SECRET=sua_chave_mestra
-EMAIL_USER=seu_email@gmail.com
+DB_NAME=seu_banco
+
+JWT_SECRET=sua_chave
+
+EMAIL_USER=seu_email
 EMAIL_PASS=sua_senha_de_app
+```
+
+Inicie o servidor:
+
+```bash
+npm start
+```
+
+---
+
+# Como acessar
+
+A aplicação está disponível online:
+
+🌐 https://sigos-wheat.vercel.app
+
+---
+
+Projeto desenvolvido como **Projeto Integrador** do curso Técnico em Desenvolvimento de Sistemas, com foco na aplicação de conceitos de desenvolvimento **full stack**, autenticação de usuários, APIs REST, banco de dados relacional e deploy em nuvem.
+````
